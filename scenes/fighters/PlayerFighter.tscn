@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/fighters/Fighter.tscn" id="1_fighter"]
+[ext_resource type="Script" path="res://scripts/fighters/player_fighter_input.gd" id="2_input"]
+
+[node name="PlayerFighter" type="Node3D"]
+
+[node name="Fighter" parent="." instance=ExtResource("1_fighter")]
+
+[node name="PlayerFighterInput" type="Node" parent="Fighter"]
+script = ExtResource("2_input")
+fighter_path = NodePath("..")
+

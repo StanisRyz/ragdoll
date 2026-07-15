@@ -17,6 +17,8 @@ var _skeleton: Skeleton3D
 var _animation_player: AnimationPlayer
 var _diagnostics: Dictionary = {}
 var _sockets: Dictionary = {}
+var _loadout_enabled: bool = true
+var _model_bounds: AABB
 
 func _ready() -> void:
 	if definition != null:
@@ -49,8 +51,10 @@ func apply_definition(next_definition: CharacterDefinition) -> bool:
 	animation_controller.configure(_animation_player, definition.animation_set)
 	_create_attachment_sockets()
 	attachment_controller.configure(_sockets)
-	attachment_controller.apply_loadout(definition.default_loadout)
+	if _loadout_enabled:
+		attachment_controller.apply_loadout(definition.default_loadout)
 	_build_diagnostics()
+	_rebuild_debug_visualization()
 	definition_applied.emit(definition)
 	return true
 
@@ -90,6 +94,29 @@ func apply_loadout(loadout: CharacterLoadout) -> PackedStringArray:
 		return PackedStringArray(["Attachment controller is missing."])
 	return attachment_controller.apply_loadout(loadout)
 
+func clear_loadout() -> void:
+	if attachment_controller != null:
+		attachment_controller.clear_loadout()
+	_build_diagnostics()
+
+func get_installed_item_ids() -> PackedStringArray:
+	if attachment_controller == null:
+		return PackedStringArray()
+	return attachment_controller.get_installed_item_ids()
+
+func set_loadout_enabled(enabled: bool) -> void:
+	_loadout_enabled = enabled
+	if enabled and definition != null:
+		apply_loadout(definition.default_loadout)
+	else:
+		clear_loadout()
+
+func get_model_bounds() -> AABB:
+	return _model_bounds
+
+func get_forward_direction() -> Vector3:
+	return -global_transform.basis.z.normalized()
+
 func get_socket_ids() -> PackedStringArray:
 	var ids: PackedStringArray = []
 	for socket_id: String in _sockets.keys():
@@ -119,8 +146,37 @@ func _attach_shared_animation_libraries() -> void:
 				library = AnimationLibrary.new()
 				_animation_player.add_animation_library(library_name, library)
 			if not library.has_animation(animation_name):
-				library.add_animation(animation_name, animation)
+				var runtime_animation: Animation = animation.duplicate(true)
+				_prepare_runtime_animation(runtime_animation, StringName(animation_name), library_name)
+				library.add_animation(animation_name, runtime_animation)
 		library_root.free()
+
+func _prepare_runtime_animation(animation: Animation, animation_name: StringName, library_name: StringName) -> void:
+	var action: CharacterAnimationAction = _find_action_for_clip(animation_name, library_name)
+	if action != null:
+		animation.loop_mode = action.expected_loop_mode as Animation.LoopMode
+	_neutralize_root_displacement(animation)
+
+func _find_action_for_clip(animation_name: StringName, library_name: StringName) -> CharacterAnimationAction:
+	if definition == null or definition.animation_set == null:
+		return null
+	for action: CharacterAnimationAction in definition.animation_set.actions:
+		if action != null and action.clip_name == animation_name and action.library_name == library_name:
+			return action
+	return null
+
+func _neutralize_root_displacement(animation: Animation) -> void:
+	for track_index: int in animation.get_track_count():
+		var target_path: String = str(animation.track_get_path(track_index))
+		if not (target_path.ends_with(":root") or target_path.ends_with(":hips")):
+			continue
+		if animation.track_get_type(track_index) != Animation.TYPE_POSITION_3D:
+			continue
+		if animation.track_get_key_count(track_index) == 0:
+			continue
+		var first_value: Variant = animation.track_get_key_value(track_index, 0)
+		for key_index: int in animation.track_get_key_count(track_index):
+			animation.track_set_key_value(track_index, key_index, first_value)
 
 func _infer_library_name(path: String) -> StringName:
 	return StringName(path.get_file().get_basename())
@@ -156,25 +212,26 @@ func _find_or_create_animation_player(root: Node) -> AnimationPlayer:
 func _build_diagnostics() -> void:
 	var errors: PackedStringArray = _diagnostics.get("errors", PackedStringArray())
 	var warnings: PackedStringArray = _diagnostics.get("warnings", PackedStringArray())
+	_model_bounds = _compute_bounds()
 	_diagnostics = {
 		"id": definition.id if definition != null else &"",
 		"display_name": definition.display_name if definition != null else "",
 		"skeleton_path": str(_model_instance.get_path_to(_skeleton)) if _model_instance != null and _skeleton != null else "",
 		"bone_count": _skeleton.get_bone_count() if _skeleton != null else 0,
-		"height": _compute_height(),
+		"height": _model_bounds.size.y,
 		"available_actions": get_available_actions(),
 		"missing_required_actions": definition.animation_set.get_missing_required_actions() if definition != null and definition.animation_set != null else PackedStringArray(),
 		"loadout": definition.default_loadout.id if definition != null and definition.default_loadout != null else &"",
-		"installed_items": attachment_controller.get_installed_item_ids(),
+		"installed_items": get_installed_item_ids(),
 		"sockets": get_socket_ids(),
 		"errors": errors,
 		"warnings": warnings,
 	}
 	_diagnostics.warnings.append_array(attachment_controller.get_warnings())
 
-func _compute_height() -> float:
+func _compute_bounds() -> AABB:
 	if _model_instance == null:
-		return 0.0
+		return AABB()
 	var bounds := AABB()
 	var initialized: bool = false
 	for mesh: MeshInstance3D in _collect_mesh_instances(_model_instance):
@@ -186,7 +243,45 @@ func _compute_height() -> float:
 		else:
 			bounds = transformed
 			initialized = true
-	return bounds.size.y
+	return bounds
+
+func _compute_height() -> float:
+	return _compute_bounds().size.y
+
+func _rebuild_debug_visualization() -> void:
+	for child: Node in debug_visualization.get_children():
+		child.queue_free()
+	var bounds: AABB = get_model_bounds()
+	var box := MeshInstance3D.new()
+	box.name = "Bounds"
+	var box_mesh := BoxMesh.new()
+	box_mesh.size = bounds.size
+	box.mesh = box_mesh
+	box.position = bounds.get_center()
+	debug_visualization.add_child(box)
+	var ground := MeshInstance3D.new()
+	ground.name = "GroundMarker"
+	var ground_mesh := BoxMesh.new()
+	ground_mesh.size = Vector3(0.7, 0.02, 0.7)
+	ground.mesh = ground_mesh
+	debug_visualization.add_child(ground)
+	var forward := MeshInstance3D.new()
+	forward.name = "ForwardMarker"
+	var forward_mesh := BoxMesh.new()
+	forward_mesh.size = Vector3(0.12, 0.12, 1.2)
+	forward.mesh = forward_mesh
+	forward.position = Vector3(0, 0.1, -0.7)
+	debug_visualization.add_child(forward)
+	for socket_id: String in _sockets.keys():
+		var marker := MeshInstance3D.new()
+		marker.name = "%sMarker" % socket_id.to_pascal_case()
+		var marker_mesh := SphereMesh.new()
+		marker_mesh.radius = 0.08
+		marker_mesh.height = 0.16
+		marker.mesh = marker_mesh
+		var socket: Node3D = _sockets[socket_id]
+		debug_visualization.add_child(marker)
+		marker.global_position = socket.global_position
 
 func _collect_mesh_instances(root: Node) -> Array[MeshInstance3D]:
 	var meshes: Array[MeshInstance3D] = []

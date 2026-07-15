@@ -73,8 +73,10 @@ Animation libraries are `Rig_Medium_General.glb` and `Rig_Medium_MovementBasic.g
 | idle | `Rig_Medium_General/Idle_A` |
 | walk | `Rig_Medium_MovementBasic/Walking_A` |
 | run | `Rig_Medium_MovementBasic/Running_A` |
-| fall | `Rig_Medium_General/Death_A` |
+| airborne | `Rig_Medium_MovementBasic/Jump_Idle` |
+| land | `Rig_Medium_MovementBasic/Jump_Land` |
 | hit | `Rig_Medium_General/Hit_A` |
+| eliminated | `Rig_Medium_General/Death_A` |
 | attack | unavailable in audited libraries |
 | victory | unavailable in audited libraries |
 
@@ -87,7 +89,19 @@ Default visual loadouts are data resources: Knight uses sword + shield, Barbaria
 - `reports/characters/kaykit_skeleton_compatibility.md`
 - `reports/characters/kaykit_animation_compatibility.md`
 
-Latest result: `0 errors`, `6 warnings`. The warnings document non-critical full bone list/order differences while shared key bones and attachment sockets remain compatible.
+Latest result: `0 errors`, `5 warnings`, `1 note`. The warnings document non-critical full bone list/order differences while shared key bones and attachment sockets remain compatible.
+
+## Fighter Movement
+
+`Fighter.tscn` is a reusable `CharacterBody3D` wrapper around `CharacterVisual`. It exposes movement, reset, death-zone, debug, and character-definition APIs without reading keyboard input. `PlayerFighter.tscn` adds `PlayerFighterInput`, which reads `move_left/right/forward/backward`, converts input through `ArenaCameraRig` flat forward/right vectors, and sends world-space movement intent to `Fighter`.
+
+Locomotion states are `IDLE`, `WALKING`, `RUNNING`, `AIRBORNE`, and `DISABLED`. `FighterMotor` owns acceleration, deceleration, gravity, maximum speed, fall-speed limits, air control, and facing rotation from `FighterMovementConfig`. The default config is `resources/fighters/default_fighter_movement_config.tres`, tuned for the 24x24 metre arena.
+
+`ArenaCameraRig.tscn` follows the Fighter `CameraTarget`, keeps a fixed arena-brawler yaw/pitch, uses a `SpringArm3D`, adds small velocity look-ahead, and biases the look target slightly toward the arena centre. It does not rotate with every Fighter turn.
+
+`FighterMovementTest.tscn` is now the Bootstrap development scene. Controls: WASD moves camera-relative, R resets to player spawn, C cycles all six CharacterDefinitions, Q toggles environment quality, F toggles Fighter debug, V toggles CharacterVisual debug, and M toggles arena markers. DeathZone entry calls `Fighter.notify_death_zone`, disables movement, and can be recovered through reset.
+
+`FighterMovementValidationTest.tscn` validates all six CharacterDefinitions without keyboard input: definition application, acceleration, speed cap, stopping without sliding, direction change and rotation, disabled movement, DeathZone transition to `DISABLED`, reset to `IDLE`, and runtime animation loop/one-shot policy. Latest result: `0 errors`, `0 warnings`.
 
 ## Web export and next stage
 
@@ -95,4 +109,4 @@ The repository keeps a baseline Web preset without a custom shell or Yandex SDK.
 
 `EnvironmentBenchmark.tscn` now reports current, average, and minimum FPS; node count; total and visible `MeshInstance3D` count; active quality profile; and visuals on/off. It automatically cycles STANDARD visuals on, LOW visuals on, STANDARD visuals off, and LOW visuals off.
 
-Next: start the controlled Fighter layer from `CharacterDefinition` + `CharacterVisual`, then add the gameplay camera without changing imported GLB internals or visual-only loadout rules.
+Next: add combat interaction: hitbox, hurtbox, a basic attack, and dash while keeping locomotion independent.

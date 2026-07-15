@@ -12,8 +12,7 @@ display_name = "Rogue Hooded"
 model_scene = ExtResource("2_model")
 visual_scale = 0.920
 vertical_offset = 0.0
-forward_rotation_degrees = 0.0
+forward_rotation_degrees = 180.0
 animation_set = ExtResource("3_anim")
 default_loadout = ExtResource("4_loadout")
 enabled = true
-

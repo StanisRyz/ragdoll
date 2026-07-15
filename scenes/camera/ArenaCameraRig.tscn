@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/camera/arena_camera_rig.gd" id="1_rig"]
+[ext_resource type="Resource" path="res://resources/camera/default_arena_camera_config.tres" id="2_config"]
+
+[node name="ArenaCameraRig" type="Node3D"]
+script = ExtResource("1_rig")
+config = ExtResource("2_config")
+
+[node name="FollowRoot" type="Node3D" parent="."]
+
+[node name="LookTarget" type="Node3D" parent="."]
+
+[node name="SpringArm3D" type="SpringArm3D" parent="FollowRoot"]
+spring_length = 7.0
+
+[node name="Camera3D" type="Camera3D" parent="FollowRoot/SpringArm3D"]
+current = true
+fov = 52.0
+

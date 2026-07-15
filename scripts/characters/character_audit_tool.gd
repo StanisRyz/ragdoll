@@ -112,6 +112,7 @@ static func audit_animation_library(library_name: String, scene_path: String, ch
 static func validate_compatibility(characters: Dictionary) -> Dictionary:
 	var errors: PackedStringArray = []
 	var warnings: PackedStringArray = []
+	var notes: PackedStringArray = []
 	var reference_id: String = ""
 	var reference_bones: PackedStringArray = []
 	var reference_hierarchy: Dictionary = {}
@@ -139,8 +140,8 @@ static func validate_compatibility(characters: Dictionary) -> Dictionary:
 			if str(character.body_bones.get(body_id, "")).is_empty():
 				errors.append("%s is missing body bone group %s." % [character_id, body_id])
 	if errors.is_empty():
-		warnings.append("All audited Adventurers share compatible Rig_Medium key bones, socket bones, and key hierarchy.")
-	return {"errors": errors, "warnings": warnings, "reference_character_id": reference_id}
+		notes.append("All audited Adventurers share compatible Rig_Medium key bones, socket bones, and key hierarchy.")
+	return {"errors": errors, "warnings": warnings, "notes": notes, "reference_character_id": reference_id}
 
 static func _audit_animation_clip(library_name: String, animation_name: String, animation: Animation, characters: Dictionary) -> Dictionary:
 	var track_types: PackedStringArray = []

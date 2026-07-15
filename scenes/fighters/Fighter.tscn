@@ -1,0 +1,74 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/fighters/fighter.gd" id="1_fighter"]
+[ext_resource type="Resource" path="res://resources/fighters/default_fighter_movement_config.tres" id="2_config"]
+[ext_resource type="PackedScene" path="res://scenes/characters/CharacterVisual.tscn" id="3_visual"]
+[ext_resource type="Script" path="res://scripts/fighters/fighter_motor.gd" id="4_motor"]
+[ext_resource type="Script" path="res://scripts/fighters/fighter_state_controller.gd" id="5_state"]
+[ext_resource type="Script" path="res://scripts/fighters/fighter_animation_bridge.gd" id="6_animation"]
+[ext_resource type="Script" path="res://scripts/fighters/fighter_fall_detector.gd" id="7_fall"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape"]
+radius = 0.42
+height = 1.7
+
+[sub_resource type="CapsuleMesh" id="CapsuleDebugMesh"]
+radius = 0.42
+height = 1.7
+
+[sub_resource type="StandardMaterial3D" id="DebugMaterial"]
+albedo_color = Color(0.1, 0.75, 1, 0.22)
+transparency = 1
+
+[sub_resource type="SphereMesh" id="CameraTargetMesh"]
+radius = 0.1
+height = 0.2
+
+[node name="Fighter" type="CharacterBody3D"]
+script = ExtResource("1_fighter")
+movement_config = ExtResource("2_config")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.95, 0)
+shape = SubResource("CapsuleShape")
+
+[node name="CharacterVisual" parent="." instance=ExtResource("3_visual")]
+
+[node name="GroundProbe" type="RayCast3D" parent="."]
+target_position = Vector3(0, -1.2, 0)
+enabled = true
+
+[node name="CameraTarget" type="Node3D" parent="."]
+position = Vector3(0, 1.35, 0)
+
+[node name="DebugVisualization" type="Node3D" parent="."]
+visible = false
+
+[node name="Capsule" type="MeshInstance3D" parent="DebugVisualization"]
+position = Vector3(0, 0.95, 0)
+mesh = SubResource("CapsuleDebugMesh")
+surface_material_override/0 = SubResource("DebugMaterial")
+
+[node name="IntentDirection" type="Node3D" parent="DebugVisualization"]
+
+[node name="VelocityDirection" type="Node3D" parent="DebugVisualization"]
+
+[node name="FacingDirection" type="Node3D" parent="DebugVisualization"]
+
+[node name="CameraTargetMarker" type="MeshInstance3D" parent="DebugVisualization"]
+position = Vector3(0, 1.35, 0)
+mesh = SubResource("CameraTargetMesh")
+
+[node name="Components" type="Node" parent="."]
+
+[node name="FighterMotor" type="Node" parent="Components"]
+script = ExtResource("4_motor")
+
+[node name="FighterStateController" type="Node" parent="Components"]
+script = ExtResource("5_state")
+
+[node name="FighterAnimationBridge" type="Node" parent="Components"]
+script = ExtResource("6_animation")
+
+[node name="FighterFallDetector" type="Node" parent="Components"]
+script = ExtResource("7_fall")

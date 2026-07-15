@@ -48,6 +48,18 @@
 - Attachment sockets are canonical (`right_hand`, `left_hand`, `back`, `head`) and must be resolved from audited skeleton bones. If KayKit skeletons change, rerun the audit before changing socket names.
 - Run `scenes/characters/CharacterValidationTest.tscn` after editing character definitions, animation sets, accessory prefabs, loadouts, or curated Adventurers assets. Treat validation errors as blockers; warnings require explicit review in the reports.
 
+## Fighter locomotion
+
+- `Fighter` is the gameplay-facing `CharacterBody3D` wrapper around `CharacterVisual`. Combat, AI, and player systems must use the `Fighter` API instead of mutating velocity, animation players, or imported model nodes directly.
+- `Fighter` never reads `Input` directly. Player control belongs to `PlayerFighterInput`; future AI or mobile adapters should drive the same `set_move_intent` and `clear_move_intent` API.
+- Movement intent is world-space and camera-relative for player input. `ArenaCameraRig` provides flat forward/right vectors; input adapters must remove vertical camera components before sending intent.
+- `FighterMotor` owns horizontal velocity, vertical velocity, acceleration, deceleration, gravity, fall-speed limits, facing direction, and `move_and_slide`. Keep movement frame-rate independent and do not add combat impulses here until the combat layer exists.
+- `FighterStateController` owns only simple locomotion states: `IDLE`, `WALKING`, `RUNNING`, `AIRBORNE`, `DISABLED`. Do not replace it with a complex state machine for combat work.
+- `FighterAnimationBridge` maps locomotion state to canonical animation IDs and must not restart the same action every physics frame. Runtime locomotion animation copies are treated as in-place; world movement is owned by `CharacterBody3D`.
+- DeathZones connect to `Fighter.notify_death_zone(zone_id)`. Falling disables movement and emits `fighter_fell`; it must not delete the Fighter or end a match.
+- `reset_to_transform` must clear velocity and intent, restore upright orientation, re-enable movement, return to `IDLE`, and preserve the current character/loadout.
+- Run `scenes/fighters/FighterMovementValidationTest.tscn` after movement, camera, Fighter animation, or reset changes. Locomotion is separate from future hitbox, hurtbox, attack, dash, and combat-state logic.
+
 ## Collision layers
 
 | Layer | Name |

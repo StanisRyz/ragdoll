@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="FighterMovementConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/fighters/fighter_movement_config.gd" id="1_config"]
+
+[resource]
+script = ExtResource("1_config")
+maximum_speed = 7.0
+acceleration = 24.0
+deceleration = 30.0
+rotation_speed = 11.0
+gravity = 28.0
+maximum_fall_speed = 36.0
+air_control = 0.35
+ground_snap_length = 0.35
+maximum_floor_angle = 50.0
+walk_animation_threshold = 0.25
+run_animation_threshold = 4.0
+stop_speed_epsilon = 0.08
+

@@ -9,6 +9,7 @@ const CharacterAuditTool := preload("res://scripts/characters/character_audit_to
 
 var _errors: PackedStringArray = []
 var _warnings: PackedStringArray = []
+var _notes: PackedStringArray = []
 var _visual_results: Array[Dictionary] = []
 
 func _ready() -> void:
@@ -17,20 +18,24 @@ func _ready() -> void:
 func _run_validation() -> void:
 	_errors.clear()
 	_warnings.clear()
+	_notes.clear()
 	_visual_results.clear()
 	var definitions: Array[CharacterDefinition] = CHARACTER_CATALOG.get_enabled_definitions()
 	var compatibility: Dictionary = CharacterCompatibilityValidator.validate_definitions(definitions)
 	_errors.append_array(compatibility.errors)
 	_warnings.append_array(compatibility.warnings)
+	_notes.append_array(compatibility.get("notes", PackedStringArray()))
 	for definition: CharacterDefinition in definitions:
 		_validate_definition(definition)
 	_write_reports(compatibility.audit)
-	var summary: String = "CharacterValidationTest: %d errors, %d warnings, %d definitions" % [_errors.size(), _warnings.size(), definitions.size()]
+	var summary: String = "CharacterValidationTest: %d errors, %d warnings, %d notes, %d definitions" % [_errors.size(), _warnings.size(), _notes.size(), definitions.size()]
 	print(summary)
 	for message: String in _errors:
 		push_error(message)
 	for message: String in _warnings:
 		push_warning(message)
+	for message: String in _notes:
+		print("NOTE: %s" % message)
 	if quit_on_finish:
 		get_tree().quit(1 if not _errors.is_empty() else 0)
 
@@ -70,7 +75,9 @@ func _build_skeleton_report(audit: Dictionary) -> String:
 		"",
 		"- Errors: %d" % audit.compatibility.errors.size(),
 		"- Warnings: %d" % audit.compatibility.warnings.size(),
+		"- Notes: %d" % audit.compatibility.get("notes", PackedStringArray()).size(),
 		"- Reference character: `%s`" % audit.compatibility.reference_character_id,
+		"- Policy: world movement is owned by `CharacterBody3D`; KayKit locomotion clips are prepared as runtime in-place animation copies.",
 		"",
 		"## Characters",
 		"",
@@ -115,8 +122,10 @@ func _build_animation_report(audit: Dictionary) -> String:
 		"- `idle` -> `Rig_Medium_General/Idle_A`",
 		"- `walk` -> `Rig_Medium_MovementBasic/Walking_A`",
 		"- `run` -> `Rig_Medium_MovementBasic/Running_A`",
-		"- `fall` -> `Rig_Medium_General/Death_A`",
+		"- `airborne` -> `Rig_Medium_MovementBasic/Jump_Idle`",
+		"- `land` -> `Rig_Medium_MovementBasic/Jump_Land`",
 		"- `hit` -> `Rig_Medium_General/Hit_A`",
+		"- `eliminated` -> `Rig_Medium_General/Death_A`",
 		"- `attack` -> unavailable in audited libraries",
 		"- `victory` -> unavailable in audited libraries",
 		"",
@@ -149,4 +158,3 @@ func _write_text(path: String, text: String) -> void:
 		_errors.append("Could not write report: %s" % path)
 		return
 	file.store_string(text)
-

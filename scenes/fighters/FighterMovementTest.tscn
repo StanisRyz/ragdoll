@@ -1,0 +1,35 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/arena/ArenaMedievalForest.tscn" id="1_arena"]
+[ext_resource type="PackedScene" path="res://scenes/fighters/PlayerFighter.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/camera/ArenaCameraRig.tscn" id="3_camera"]
+[ext_resource type="Script" path="res://scripts/fighters/fighter_movement_test.gd" id="4_test"]
+[ext_resource type="Script" path="res://scripts/arena/arena_validator.gd" id="5_validator"]
+[ext_resource type="Resource" path="res://resources/configuration/arena_validation_config.tres" id="6_config"]
+[ext_resource type="PackedScene" path="res://scenes/debug/DebugOverlay.tscn" id="7_overlay"]
+
+[node name="FighterMovementTest" type="Node3D"]
+script = ExtResource("4_test")
+
+[node name="ArenaMedievalForest" parent="." instance=ExtResource("1_arena")]
+
+[node name="PlayerFighter" parent="." instance=ExtResource("2_player")]
+
+[node name="ArenaCameraRig" parent="." instance=ExtResource("3_camera")]
+
+[node name="ArenaValidator" type="Node" parent="."]
+script = ExtResource("5_validator")
+arena_path = NodePath("../ArenaMedievalForest/Physics/ArenaGraybox")
+validation_config = ExtResource("6_config")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="StatusLabel" type="Label" parent="CanvasLayer"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 900.0
+offset_bottom = 180.0
+theme_override_font_sizes/font_size = 15
+
+[node name="DebugOverlay" parent="CanvasLayer" instance=ExtResource("7_overlay")]
+

@@ -9,11 +9,11 @@ var current_action: StringName
 var current_clip_name: StringName
 var _one_shot_action: StringName
 
-func configure(player: AnimationPlayer, set: CharacterAnimationSet) -> void:
+func configure(player: AnimationPlayer, next_animation_set: CharacterAnimationSet) -> void:
 	if animation_player != null and animation_player.animation_finished.is_connected(_on_animation_finished):
 		animation_player.animation_finished.disconnect(_on_animation_finished)
 	animation_player = player
-	animation_set = set
+	animation_set = next_animation_set
 	current_action = &""
 	current_clip_name = &""
 	if animation_player != null and not animation_player.animation_finished.is_connected(_on_animation_finished):
@@ -28,12 +28,24 @@ func play_action(action_id: StringName, force_one_shot: bool = false) -> bool:
 	var clip_key: StringName = _resolve_clip_key(action)
 	if clip_key.is_empty() or not animation_player.has_animation(clip_key):
 		return false
+	if current_action == action_id and animation_player.is_playing() and not force_one_shot:
+		return true
 	animation_player.speed_scale = action.playback_speed
 	current_action = action_id
 	current_clip_name = clip_key
 	_one_shot_action = action_id if force_one_shot or action.expected_loop_mode == Animation.LOOP_NONE else &""
 	animation_player.play(clip_key, action.blend_time, action.playback_speed)
 	return true
+
+func force_action(action_id: StringName) -> bool:
+	current_action = &""
+	return play_action(action_id, true)
+
+func has_action(action_id: StringName) -> bool:
+	if animation_set == null:
+		return false
+	var action: CharacterAnimationAction = animation_set.get_action(action_id)
+	return action != null and action.is_available()
 
 func stop() -> void:
 	if animation_player != null:

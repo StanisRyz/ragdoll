@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CharacterAnimationSet" load_steps=11 format=3]
+[gd_resource type="Resource" script_class="CharacterAnimationSet" load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/characters/character_animation_set.gd" id="1_set"]
 [ext_resource type="Script" path="res://scripts/characters/character_animation_action.gd" id="2_action"]
@@ -32,14 +32,23 @@ required = true
 expected_loop_mode = 1
 blend_time = 0.12
 
-[sub_resource type="Resource" id="Action_fall"]
+[sub_resource type="Resource" id="Action_airborne"]
 script = ExtResource("2_action")
-action_id = &"fall"
-library_name = &"Rig_Medium_General"
-clip_name = &"Death_A"
-required = false
+action_id = &"airborne"
+library_name = &"Rig_Medium_MovementBasic"
+clip_name = &"Jump_Idle"
+required = true
 expected_loop_mode = 0
 blend_time = 0.08
+
+[sub_resource type="Resource" id="Action_land"]
+script = ExtResource("2_action")
+action_id = &"land"
+library_name = &"Rig_Medium_MovementBasic"
+clip_name = &"Jump_Land"
+required = true
+expected_loop_mode = 0
+blend_time = 0.04
 
 [sub_resource type="Resource" id="Action_hit"]
 script = ExtResource("2_action")
@@ -49,6 +58,15 @@ clip_name = &"Hit_A"
 required = true
 expected_loop_mode = 0
 blend_time = 0.06
+
+[sub_resource type="Resource" id="Action_eliminated"]
+script = ExtResource("2_action")
+action_id = &"eliminated"
+library_name = &"Rig_Medium_General"
+clip_name = &"Death_A"
+required = false
+expected_loop_mode = 0
+blend_time = 0.08
 
 [sub_resource type="Resource" id="Action_attack"]
 script = ExtResource("2_action")
@@ -70,5 +88,4 @@ expected_loop_mode = 0
 script = ExtResource("1_set")
 id = &"rig_medium_adventurers"
 animation_libraries = Array[PackedScene]([ExtResource("3_general"), ExtResource("4_movement")])
-actions = Array[CharacterAnimationAction]([SubResource("Action_idle"), SubResource("Action_walk"), SubResource("Action_run"), SubResource("Action_fall"), SubResource("Action_hit"), SubResource("Action_attack"), SubResource("Action_victory")])
-
+actions = Array[CharacterAnimationAction]([SubResource("Action_idle"), SubResource("Action_walk"), SubResource("Action_run"), SubResource("Action_airborne"), SubResource("Action_land"), SubResource("Action_hit"), SubResource("Action_eliminated"), SubResource("Action_attack"), SubResource("Action_victory")])
