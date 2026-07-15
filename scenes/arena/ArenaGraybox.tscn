@@ -1,0 +1,172 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/arena/arena_root.gd" id="1_root"]
+[ext_resource type="PackedScene" path="res://scenes/arena/modules/ArenaFloorTile.tscn" id="2_floor"]
+[ext_resource type="PackedScene" path="res://scenes/arena/modules/ArenaEdgeSection.tscn" id="3_edge"]
+[ext_resource type="PackedScene" path="res://scenes/arena/modules/ArenaCornerSection.tscn" id="4_corner"]
+[ext_resource type="PackedScene" path="res://scenes/arena/modules/ArenaPillar.tscn" id="5_pillar"]
+[ext_resource type="PackedScene" path="res://scenes/arena/modules/ArenaGrayboxBlock.tscn" id="6_block"]
+[ext_resource type="PackedScene" path="res://scenes/arena/ArenaSpawnPoint.tscn" id="7_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/arena/ArenaHazardSocket.tscn" id="8_socket"]
+[ext_resource type="PackedScene" path="res://scenes/arena/ArenaCameraAnchor.tscn" id="9_anchor"]
+[ext_resource type="PackedScene" path="res://scenes/arena/ArenaDeathZone.tscn" id="10_death"]
+
+[node name="ArenaGraybox" type="Node3D"]
+script = ExtResource("1_root")
+[node name="Geometry" type="Node3D" parent="."]
+[node name="StaticCollision" type="Node3D" parent="."]
+[node name="FloorNW" parent="StaticCollision" instance=ExtResource("2_floor")]
+position = Vector3(-6, 0, -6)
+[node name="FloorN" parent="StaticCollision" instance=ExtResource("2_floor")]
+position = Vector3(0, 0, -6)
+[node name="FloorNE" parent="StaticCollision" instance=ExtResource("2_floor")]
+position = Vector3(6, 0, -6)
+[node name="FloorW" parent="StaticCollision" instance=ExtResource("2_floor")]
+position = Vector3(-6, 0, 0)
+[node name="FloorCenter" parent="StaticCollision" instance=ExtResource("2_floor")]
+[node name="FloorE" parent="StaticCollision" instance=ExtResource("2_floor")]
+position = Vector3(6, 0, 0)
+[node name="FloorSW" parent="StaticCollision" instance=ExtResource("2_floor")]
+position = Vector3(-6, 0, 6)
+[node name="FloorS" parent="StaticCollision" instance=ExtResource("2_floor")]
+position = Vector3(0, 0, 6)
+[node name="FloorSE" parent="StaticCollision" instance=ExtResource("2_floor")]
+position = Vector3(6, 0, 6)
+[node name="EdgeNorth" parent="StaticCollision" instance=ExtResource("3_edge")]
+position = Vector3(0, -0.1, -10.5)
+[node name="EdgeSouth" parent="StaticCollision" instance=ExtResource("3_edge")]
+position = Vector3(0, -0.1, 10.5)
+[node name="EdgeWest" parent="StaticCollision" instance=ExtResource("3_edge")]
+position = Vector3(-10.5, -0.1, 0)
+rotation_degrees = Vector3(0, 90, 0)
+[node name="EdgeEast" parent="StaticCollision" instance=ExtResource("3_edge")]
+position = Vector3(10.5, -0.1, 0)
+rotation_degrees = Vector3(0, 90, 0)
+[node name="CornerNW" parent="StaticCollision" instance=ExtResource("4_corner")]
+position = Vector3(-10.5, 0.1, -10.5)
+[node name="CornerNE" parent="StaticCollision" instance=ExtResource("4_corner")]
+position = Vector3(10.5, 0.1, -10.5)
+[node name="CornerSW" parent="StaticCollision" instance=ExtResource("4_corner")]
+position = Vector3(-10.5, 0.1, 10.5)
+[node name="CornerSE" parent="StaticCollision" instance=ExtResource("4_corner")]
+position = Vector3(10.5, 0.1, 10.5)
+[node name="PillarNW" parent="StaticCollision" instance=ExtResource("5_pillar")]
+position = Vector3(-7.5, 1.6, -7.5)
+[node name="PillarNE" parent="StaticCollision" instance=ExtResource("5_pillar")]
+position = Vector3(7.5, 1.6, -7.5)
+[node name="PillarSW" parent="StaticCollision" instance=ExtResource("5_pillar")]
+position = Vector3(-7.5, 1.6, 7.5)
+[node name="PillarSE" parent="StaticCollision" instance=ExtResource("5_pillar")]
+position = Vector3(7.5, 1.6, 7.5)
+[node name="RaisedBlockNorth" parent="StaticCollision" instance=ExtResource("6_block")]
+position = Vector3(-3.5, 0.95, -5)
+[node name="RaisedBlockSouth" parent="StaticCollision" instance=ExtResource("6_block")]
+position = Vector3(3.5, 0.95, 5)
+[node name="SpawnPoints" type="Node3D" parent="."]
+[node name="Player" parent="SpawnPoints" instance=ExtResource("7_spawn")]
+position = Vector3(0, 0.25, 5)
+rotation_degrees = Vector3(0, 180, 0)
+spawn_id = "player_main"
+spawn_type = 0
+[node name="Bot01" parent="SpawnPoints" instance=ExtResource("7_spawn")]
+position = Vector3(-5, 0.25, 6)
+rotation_degrees = Vector3(0, 140, 0)
+spawn_id = "bot_01"
+[node name="Bot02" parent="SpawnPoints" instance=ExtResource("7_spawn")]
+position = Vector3(5, 0.25, 6)
+rotation_degrees = Vector3(0, -140, 0)
+spawn_id = "bot_02"
+[node name="Bot03" parent="SpawnPoints" instance=ExtResource("7_spawn")]
+position = Vector3(-7, 0.25, 2)
+rotation_degrees = Vector3(0, 105, 0)
+spawn_id = "bot_03"
+[node name="Bot04" parent="SpawnPoints" instance=ExtResource("7_spawn")]
+position = Vector3(7, 0.25, 2)
+rotation_degrees = Vector3(0, -105, 0)
+spawn_id = "bot_04"
+[node name="Bot05" parent="SpawnPoints" instance=ExtResource("7_spawn")]
+position = Vector3(-7, 0.25, -3)
+rotation_degrees = Vector3(0, 70, 0)
+spawn_id = "bot_05"
+[node name="Bot06" parent="SpawnPoints" instance=ExtResource("7_spawn")]
+position = Vector3(7, 0.25, -3)
+rotation_degrees = Vector3(0, -70, 0)
+spawn_id = "bot_06"
+[node name="Bot07" parent="SpawnPoints" instance=ExtResource("7_spawn")]
+position = Vector3(-4.5, 0.25, -6.5)
+rotation_degrees = Vector3(0, 35, 0)
+spawn_id = "bot_07"
+[node name="Bot08" parent="SpawnPoints" instance=ExtResource("7_spawn")]
+position = Vector3(4.5, 0.25, -6.5)
+rotation_degrees = Vector3(0, -35, 0)
+spawn_id = "bot_08"
+[node name="Bot09" parent="SpawnPoints" instance=ExtResource("7_spawn")]
+position = Vector3(-2.5, 0.25, 8)
+rotation_degrees = Vector3(0, 162, 0)
+spawn_id = "bot_09"
+[node name="Bot10" parent="SpawnPoints" instance=ExtResource("7_spawn")]
+position = Vector3(2.5, 0.25, 8)
+rotation_degrees = Vector3(0, -162, 0)
+spawn_id = "bot_10"
+[node name="Bot11" parent="SpawnPoints" instance=ExtResource("7_spawn")]
+position = Vector3(0, 0.25, -8)
+spawn_id = "bot_11"
+[node name="HazardSockets" type="Node3D" parent="."]
+[node name="SpinnerCenter" parent="HazardSockets" instance=ExtResource("8_socket")]
+position = Vector3(0, 0.25, 0)
+socket_id = "spinner_center"
+hazard_type = 0
+[node name="FanNorth" parent="HazardSockets" instance=ExtResource("8_socket")]
+position = Vector3(0, 0.25, -7)
+socket_id = "fan_north"
+hazard_type = 1
+[node name="FanSouth" parent="HazardSockets" instance=ExtResource("8_socket")]
+position = Vector3(0, 0.25, 7)
+rotation_degrees = Vector3(0, 180, 0)
+socket_id = "fan_south"
+hazard_type = 1
+[node name="FanEast" parent="HazardSockets" instance=ExtResource("8_socket")]
+position = Vector3(7, 0.25, 0)
+rotation_degrees = Vector3(0, -90, 0)
+socket_id = "fan_east"
+hazard_type = 1
+[node name="FanWest" parent="HazardSockets" instance=ExtResource("8_socket")]
+position = Vector3(-7, 0.25, 0)
+rotation_degrees = Vector3(0, 90, 0)
+socket_id = "fan_west"
+hazard_type = 1
+[node name="CraneWeight" parent="HazardSockets" instance=ExtResource("8_socket")]
+position = Vector3(8.5, 0.25, -8.5)
+socket_id = "crane_weight"
+hazard_type = 2
+[node name="CollapseNorth" parent="HazardSockets" instance=ExtResource("8_socket")]
+position = Vector3(-4, 0.25, -8.5)
+socket_id = "collapse_section_north"
+hazard_type = 3
+[node name="CollapseSouth" parent="HazardSockets" instance=ExtResource("8_socket")]
+position = Vector3(4, 0.25, 8.5)
+socket_id = "collapse_section_south"
+hazard_type = 3
+[node name="CollapseEast" parent="HazardSockets" instance=ExtResource("8_socket")]
+position = Vector3(8.5, 0.25, 4)
+socket_id = "collapse_section_east"
+hazard_type = 3
+[node name="CollapseWest" parent="HazardSockets" instance=ExtResource("8_socket")]
+position = Vector3(-8.5, 0.25, -4)
+socket_id = "collapse_section_west"
+hazard_type = 3
+[node name="CameraAnchors" type="Node3D" parent="."]
+[node name="Overview" parent="CameraAnchors" instance=ExtResource("9_anchor")]
+transform = Transform3D(1, 0, 0, 0, 0.9, 0.435, 0, -0.435, 0.9, 0, 12, 20)
+anchor_id = "overview"
+[node name="GameplayCandidate" parent="CameraAnchors" instance=ExtResource("9_anchor")]
+transform = Transform3D(1, 0, 0, 0, 0.97, 0.24, 0, -0.24, 0.97, 0, 7, 14)
+anchor_id = "gameplay_candidate"
+[node name="TopDownDebug" parent="CameraAnchors" instance=ExtResource("9_anchor")]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 23, 0)
+anchor_id = "top_down_debug"
+[node name="DeathZones" type="Node3D" parent="."]
+[node name="MainDeathZone" parent="DeathZones" instance=ExtResource("10_death")]
+position = Vector3(0, -6, 0)
+[node name="Decoration" type="Node3D" parent="."]
+[node name="DebugVisualization" type="Node3D" parent="."]

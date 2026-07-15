@@ -26,7 +26,7 @@ func _build_metrics_text() -> String:
 		current_scene_name = current_scene.name
 	var object_count: Variant = Performance.get_monitor(Performance.OBJECT_NODE_COUNT)
 	var run_mode: String = "Web" if AppConfig.is_web_build() else "Desktop"
-	if AppConfig.is_editor_run():
+	if AppConfig.is_editor_tool_context():
 		run_mode = "Editor"
 	return "FPS: %d / target %d\nScene: %s\nWindow: %s\nRenderer: %s\nMode: %s\nNodes: %s\nDebug: %s" % [
 		Engine.get_frames_per_second(),

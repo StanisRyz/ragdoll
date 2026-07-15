@@ -3,12 +3,12 @@ extends Node
 
 const TARGET_FPS: int = 60
 const DESIGN_VIEWPORT_SIZE: Vector2i = Vector2i(1280, 720)
-const START_SCENE_PATH: String = "res://scenes/debug/DebugPlayground.tscn"
+const START_SCENE_PATH: String = "res://scenes/arena/ArenaGrayboxTest.tscn"
 
 var debug_mode: bool = OS.is_debug_build()
 var debug_overlay_visible: bool = true
 
-func is_editor_run() -> bool:
+func is_editor_tool_context() -> bool:
 	return Engine.is_editor_hint()
 
 func is_web_build() -> bool:

@@ -21,6 +21,15 @@
 - After project or GDScript changes, run Godot headlessly when available: `Godot --headless --path . --editor --quit`.
 - Also launch `Bootstrap`, exercise F10 restart and F11 overlay toggle, and inspect the Output panel for parser, missing-resource, or autoload errors before handing off a change.
 
+## Arena scenes
+
+- `ArenaGraybox` must retain these direct containers: `Geometry`, `StaticCollision`, `SpawnPoints`, `HazardSockets`, `CameraAnchors`, `DeathZones`, `Decoration`, and `DebugVisualization`.
+- `ArenaRoot` is the only public discovery surface for arena content. Gameplay systems use its typed methods; they must not hard-code child paths or repeatedly scan the tree.
+- Spawn points, hazard sockets, camera anchors, and DeathZones need unique IDs. Spawn points face the arena, remain above the floor, stay clear of open edges, and preserve the configured minimum spacing.
+- DeathZones only signal that a `PhysicsBody3D` entered. They never delete bodies, reload a scene, or control a match.
+- Use explicit primitive `MeshInstance3D` plus manual `CollisionShape3D` pairs for physical graybox modules. Static arena modules use layer 1 `World`; DeathZones use layer 6 `DeathZones`. Do not generate mesh collision automatically.
+- Run `ArenaValidator` whenever arena composition, IDs, transforms, containers, or collision layers change. Address errors before treating an arena scene as usable; warnings need an explicit review.
+
 ## Collision layers
 
 | Layer | Name |

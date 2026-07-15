@@ -1,72 +1,57 @@
 # Ragdoll Arena
 
-Technical Godot 4.5 foundation for a future browser ragdoll arena targeting Yandex Games. This stage deliberately contains no arena rules, fighters, ragdolls, progression, or SDK integration.
+Godot 4.5 Compatibility-renderer foundation for a future browser ragdoll arena. The current stage is a playable modular graybox test arena; it intentionally has no fighters, AI, ragdolls, attacks, active traps, match flow, final assets, or Yandex SDK.
 
-## Opening and running
+## Open, run, and verify
 
-Open `project.godot` in Godot 4.5 or newer. The project uses the Compatibility renderer and starts at `scenes/bootstrap/Bootstrap.tscn`; Bootstrap validates and opens the debug playground. Run with the editor's **Play** button or:
-
-```powershell
-D:\godot\Godot.exe --path .
-```
-
-The baseline viewport is 1280×720, the window is resizable, UI uses canvas-item stretching, and physics runs at 60 ticks per second.
-
-## Technical checks
-
-When Godot is available, import and parse the project with:
+Open `project.godot` in Godot 4.5+. The main scene remains `Bootstrap.tscn`, which safely opens `ArenaGrayboxTest.tscn`.
 
 ```powershell
-D:\godot\Godot.exe --headless --path . --editor --quit
+godot --path .
+godot --headless --path . --editor --quit
 ```
 
-Then launch the project manually. The playground confirms 3D rendering, lighting, a static physics floor, UI, routing, and the debug interface. Press F10 to safely reload the active test scene and F11 to toggle diagnostics.
+The project uses a 1280×720 baseline viewport, resizable window, canvas-item UI scaling, and 60 Hz physics. The test scene automatically runs `ArenaValidator` and shows its report in the upper-left UI.
 
-## Layout
+## Graybox arena
 
-- `assets/` — character, environment, material, audio, and UI source assets.
-- `scenes/` — bootstrap, arena, character, gameplay, UI, and debug scenes.
-- `scripts/` — matching runtime domains. `core/` contains only AppConfig, routing, and bootstrap logic; `debug/` contains diagnostics.
-- `resources/` — configuration, future character data, and arena data.
-- `tests/` and `addons/` — automated checks and project extensions.
+`ArenaGraybox.tscn` is a 24×24 metre, primitive-only arena built from reusable floor, edge, corner, pillar, and block modules. It has a clear centre, raised obstacles, open edges, one player spawn, eleven bot spawns, ten future hazard sockets, three camera anchors, and one large DeathZone below the floor.
 
-Empty planned directories are retained with `.gitkeep` files.
+`ArenaRoot` is the public arena interface. Future gameplay must obtain player/bot spawns, sockets, anchors, and DeathZones through it rather than searching scene paths. It exposes the player-spawn count for validation, and also owns arena debug-marker visibility and the baseline structural check.
 
-## Input Map
+Main scenes and scripts:
 
-| Action | Default input |
+- `scenes/arena/ArenaGraybox.tscn` — reusable arena and its stable container structure.
+- `scenes/arena/ArenaGrayboxTest.tscn` — test lighting, free camera, validator, physics probe, UI, and DebugOverlay.
+- `scenes/arena/modules/` — manually-collided primitive graybox modules on the `World` layer.
+- `ArenaSpawnPoint`, `ArenaHazardSocket`, `ArenaCameraAnchor`, and `ArenaDeathZone` — typed public arena components.
+- `ArenaValidationConfig` — small resource for spawn counts, distances, edge margin, DeathZone height, and arena size.
+
+## Test controls
+
+| Control | Action |
 | --- | --- |
-| `move_left`, `move_right`, `move_forward`, `move_backward` | A, D, W, S |
-| `primary_action`, `secondary_action` | Left mouse, right mouse |
-| `pause` | Escape |
-| `debug_restart`, `debug_toggle_overlay` | F10, F11 |
+| WASD, Space, Ctrl | Free-camera movement |
+| Shift | Faster camera movement |
+| Right mouse | Capture/release cursor |
+| Tab | Cycle camera anchors |
+| 1 / 2 | Spawn probe over player / next bot |
+| X / R | Remove / reset current probe |
+| M | Toggle arena markers |
+| F10 / F11 | Reload test scene / toggle DebugOverlay |
 
-Gameplay code must read named actions rather than physical devices, leaving room for a later mobile input adapter.
+The orange `ArenaPhysicsProbe` is a RigidBody3D with a manual collider. Its DeathZone entry is reported in the test UI; the zone deliberately does not delete the probe or control gameplay.
 
-## Collision layers
+## Input and collision contract
 
-| Layer | Name |
-| --- | --- |
-| 1 | World |
-| 2 | Fighters |
-| 3 | Hitboxes |
-| 4 | Hurtboxes |
-| 5 | Hazards |
-| 6 | DeathZones |
-| 7 | Props |
-| 8 | Sensors |
+Gameplay reads named Input Map actions, allowing a later mobile-input adapter. `World` is layer 1; `DeathZones` is layer 6. The remaining reserved layers are Fighters (2), Hitboxes (3), Hurtboxes (4), Hazards (5), Props (7), and Sensors (8).
 
-## Core components
+## Checks performed
 
-- `AppConfig` is a small autoload exposing debug flags, target FPS, technical constants, and editor/Web detection.
-- `SceneRouter` is a small autoload that checks scene resources and returns `{ ok, error }` results when switching or reloading scenes.
-- `Bootstrap` is the main scene; it contains no gameplay and reports any initial-scene loading failure.
-- `DebugOverlay` is a reusable UI scene with FPS, current scene, window size, renderer setting, run mode, node count, and debug state. It follows `AppConfig` and refreshes after scene changes.
+`godot --headless --path . --editor --quit` and a four-second headless Bootstrap run completed successfully after this stage. The arena validator runs at startup; its authored arena configuration is expected to return **0 errors and 0 warnings**. Visual flight controls, anchor switching, and probe interaction still require a manual editor/window check because headless mode cannot provide mouse-driven inspection.
 
-## Web export
+## Web export and next stage
 
-`export_presets.cfg` contains a baseline Web preset using ordinary browser-compatible settings, Compatibility rendering, and no Yandex SDK or custom shell. Export templates still need to be installed in the local Godot editor before producing a Web build.
+The repository keeps a baseline Web preset without a custom shell or Yandex SDK. Export templates must be installed locally to produce the build.
 
-## Current stage and next step
-
-The project now has a verified bootstrap-to-playground technical baseline. The recommended next step is a modular graybox arena: world bounds, floor modules, hazards, and sensors using the documented collision-layer contract.
+Next: visual environment composition, materials, lighting, and quality profiles while preserving the graybox collision and `ArenaRoot` contracts.
