@@ -60,8 +60,39 @@ KayKit originals are archived under `assets/kaykit/source/` and ignored by Godot
 
 The runtime asset catalog is documented in `resources/configuration/kaykit_runtime_catalog.md`. Adventurer GLB assets are staged only for a later character pipeline; see `assets/characters/kaykit/adventurers/TECHNICAL_REPORT.md`.
 
+## KayKit Adventurers
+
+The data-driven character visual layer supports six curated Adventurers: Barbarian, Knight, Mage, Ranger, Rogue, and Rogue Hooded. All load through `scenes/characters/CharacterVisual.tscn` from `CharacterDefinition` resources in `resources/characters/kaykit/definitions/`.
+
+All six models use a compatible `Rig_Medium` skeleton for the current visual layer: 23 bones, root bone `root`, skeleton path `Rig_Medium/Skeleton3D`, and common key/socket bones for hips, spine, head, arms, legs, `hand.r`, `hand.l`, and the canonical sockets `right_hand`, `left_hand`, `back`, `head`. Full bone order differs between several GLBs; validation records that as a warning, not a critical blocker.
+
+Animation libraries are `Rig_Medium_General.glb` and `Rig_Medium_MovementBasic.glb`. The canonical mapping is:
+
+| Action | Clip |
+| --- | --- |
+| idle | `Rig_Medium_General/Idle_A` |
+| walk | `Rig_Medium_MovementBasic/Walking_A` |
+| run | `Rig_Medium_MovementBasic/Running_A` |
+| fall | `Rig_Medium_General/Death_A` |
+| hit | `Rig_Medium_General/Hit_A` |
+| attack | unavailable in audited libraries |
+| victory | unavailable in audited libraries |
+
+Default visual loadouts are data resources: Knight uses sword + shield, Barbarian uses a two-handed axe, Mage uses a staff, Ranger uses bow + quiver, and both Rogue variants use a dagger. These accessories are visual-only prefabs under `scenes/characters/accessories/`; they have no gameplay collision, hitbox, or physics simulation.
+
+`CharacterShowcase.tscn` controls: Tab switches character, 1/2 switch canonical action, Space plays, S stops, P cycles playback speed, L toggles loadout, F toggles fill light, D toggles debug visibility, A starts automatic showcase mode, and Left/Right rotate the character.
+
+`CharacterValidationTest.tscn` is the headless check for all character definitions. It creates each `CharacterVisual`, checks skeleton/socket availability, connects animation libraries, plays mapped actions, applies default loadout, and writes:
+
+- `reports/characters/kaykit_skeleton_compatibility.md`
+- `reports/characters/kaykit_animation_compatibility.md`
+
+Latest result: `0 errors`, `6 warnings`. The warnings document non-critical full bone list/order differences while shared key bones and attachment sockets remain compatible.
+
 ## Web export and next stage
 
 The repository keeps a baseline Web preset without a custom shell or Yandex SDK. Export templates must be installed locally to produce the build. The Web preset excludes `assets/kaykit/source/**`, FBX, OBJ, MTL, PDFs, source URLs, samples, and contents preview images.
 
-Next: gameplay-facing character and hazard visuals can consume the curated KayKit pipeline without changing graybox collision or the `ArenaRoot` API.
+`EnvironmentBenchmark.tscn` now reports current, average, and minimum FPS; node count; total and visible `MeshInstance3D` count; active quality profile; and visuals on/off. It automatically cycles STANDARD visuals on, LOW visuals on, STANDARD visuals off, and LOW visuals off.
+
+Next: start the controlled Fighter layer from `CharacterDefinition` + `CharacterVisual`, then add the gameplay camera without changing imported GLB internals or visual-only loadout rules.

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CharacterLoadout" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/character_loadout.gd" id="1_loadout"]
+[ext_resource type="Script" path="res://scripts/characters/character_loadout_item.gd" id="2_item"]
+[ext_resource type="PackedScene" path="res://scenes/characters/accessories/Staff.tscn" id="3_staff"]
+
+[sub_resource type="Resource" id="Item_staff"]
+script = ExtResource("2_item")
+visual_id = &"staff"
+accessory_prefab = ExtResource("3_staff")
+socket = "right_hand"
+
+[resource]
+script = ExtResource("1_loadout")
+id = &"mage_default"
+display_name = "Staff"
+items = Array[CharacterLoadoutItem]([SubResource("Item_staff")])
+

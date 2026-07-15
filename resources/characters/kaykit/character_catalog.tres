@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CharacterDefinitionCatalog" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/character_definition_catalog.gd" id="1_catalog"]
+[ext_resource type="Resource" path="res://resources/characters/kaykit/definitions/barbarian.tres" id="2_barbarian"]
+[ext_resource type="Resource" path="res://resources/characters/kaykit/definitions/knight.tres" id="3_knight"]
+[ext_resource type="Resource" path="res://resources/characters/kaykit/definitions/mage.tres" id="4_mage"]
+[ext_resource type="Resource" path="res://resources/characters/kaykit/definitions/ranger.tres" id="5_ranger"]
+[ext_resource type="Resource" path="res://resources/characters/kaykit/definitions/rogue.tres" id="6_rogue"]
+[ext_resource type="Resource" path="res://resources/characters/kaykit/definitions/rogue_hooded.tres" id="7_rogue_hooded"]
+
+[resource]
+script = ExtResource("1_catalog")
+definitions = Array[CharacterDefinition]([ExtResource("2_barbarian"), ExtResource("3_knight"), ExtResource("4_mage"), ExtResource("5_ranger"), ExtResource("6_rogue"), ExtResource("7_rogue_hooded")])
+

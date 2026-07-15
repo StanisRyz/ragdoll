@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CharacterLoadout" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/character_loadout.gd" id="1_loadout"]
+[ext_resource type="Script" path="res://scripts/characters/character_loadout_item.gd" id="2_item"]
+[ext_resource type="PackedScene" path="res://scenes/characters/accessories/Dagger.tscn" id="3_dagger"]
+
+[sub_resource type="Resource" id="Item_dagger"]
+script = ExtResource("2_item")
+visual_id = &"dagger"
+accessory_prefab = ExtResource("3_dagger")
+socket = "right_hand"
+
+[resource]
+script = ExtResource("1_loadout")
+id = &"rogue_default"
+display_name = "Dagger"
+items = Array[CharacterLoadoutItem]([SubResource("Item_dagger")])
+

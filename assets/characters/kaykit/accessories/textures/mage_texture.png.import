@@ -2,20 +2,17 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bb280er7o2djp"
-path.s3tc="res://.godot/imported/Knight_knight_texture.png-b65cf33d34ca927080a7a4b16c095992.s3tc.ctex"
+uid="uid://b0rncqm30nu0b"
+path.s3tc="res://.godot/imported/mage_texture.png-170314bee2152a52097e6314c3bf1d36.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
-generator_parameters={
-"md5": "930b547ec91f4d0c726b16b849b216ca"
-}
 
 [deps]
 
-source_file="res://assets/characters/kaykit/adventurers/Knight_knight_texture.png"
-dest_files=["res://.godot/imported/Knight_knight_texture.png-b65cf33d34ca927080a7a4b16c095992.s3tc.ctex"]
+source_file="res://assets/characters/kaykit/accessories/textures/mage_texture.png"
+dest_files=["res://.godot/imported/mage_texture.png-170314bee2152a52097e6314c3bf1d36.s3tc.ctex"]
 
 [params]
 

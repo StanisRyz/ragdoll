@@ -1,0 +1,74 @@
+[gd_resource type="Resource" script_class="CharacterAnimationSet" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/character_animation_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scripts/characters/character_animation_action.gd" id="2_action"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit/animations/Rig_Medium_General.glb" id="3_general"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit/animations/Rig_Medium_MovementBasic.glb" id="4_movement"]
+
+[sub_resource type="Resource" id="Action_idle"]
+script = ExtResource("2_action")
+action_id = &"idle"
+library_name = &"Rig_Medium_General"
+clip_name = &"Idle_A"
+required = true
+expected_loop_mode = 1
+blend_time = 0.12
+
+[sub_resource type="Resource" id="Action_walk"]
+script = ExtResource("2_action")
+action_id = &"walk"
+library_name = &"Rig_Medium_MovementBasic"
+clip_name = &"Walking_A"
+required = true
+expected_loop_mode = 1
+blend_time = 0.12
+
+[sub_resource type="Resource" id="Action_run"]
+script = ExtResource("2_action")
+action_id = &"run"
+library_name = &"Rig_Medium_MovementBasic"
+clip_name = &"Running_A"
+required = true
+expected_loop_mode = 1
+blend_time = 0.12
+
+[sub_resource type="Resource" id="Action_fall"]
+script = ExtResource("2_action")
+action_id = &"fall"
+library_name = &"Rig_Medium_General"
+clip_name = &"Death_A"
+required = false
+expected_loop_mode = 0
+blend_time = 0.08
+
+[sub_resource type="Resource" id="Action_hit"]
+script = ExtResource("2_action")
+action_id = &"hit"
+library_name = &"Rig_Medium_General"
+clip_name = &"Hit_A"
+required = true
+expected_loop_mode = 0
+blend_time = 0.06
+
+[sub_resource type="Resource" id="Action_attack"]
+script = ExtResource("2_action")
+action_id = &"attack"
+library_name = &"Rig_Medium_General"
+clip_name = &""
+required = false
+expected_loop_mode = 0
+
+[sub_resource type="Resource" id="Action_victory"]
+script = ExtResource("2_action")
+action_id = &"victory"
+library_name = &"Rig_Medium_General"
+clip_name = &""
+required = false
+expected_loop_mode = 0
+
+[resource]
+script = ExtResource("1_set")
+id = &"rig_medium_adventurers"
+animation_libraries = Array[PackedScene]([ExtResource("3_general"), ExtResource("4_movement")])
+actions = Array[CharacterAnimationAction]([SubResource("Action_idle"), SubResource("Action_walk"), SubResource("Action_run"), SubResource("Action_fall"), SubResource("Action_hit"), SubResource("Action_attack"), SubResource("Action_victory")])
+

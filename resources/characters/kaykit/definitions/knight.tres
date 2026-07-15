@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CharacterDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/character_definition.gd" id="1_definition"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit/adventurers/Knight.glb" id="2_model"]
+[ext_resource type="Resource" path="res://resources/characters/kaykit/animation_sets/rig_medium_adventurers.tres" id="3_anim"]
+[ext_resource type="Resource" path="res://resources/characters/kaykit/loadouts/knight_default.tres" id="4_loadout"]
+
+[resource]
+script = ExtResource("1_definition")
+id = &"knight"
+display_name = "Knight"
+model_scene = ExtResource("2_model")
+visual_scale = 0.786
+vertical_offset = 0.0
+forward_rotation_degrees = 0.0
+animation_set = ExtResource("3_anim")
+default_loadout = ExtResource("4_loadout")
+enabled = true
+

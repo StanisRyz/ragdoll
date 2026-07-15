@@ -39,6 +39,15 @@
 - Use `EnvironmentQualityProfile` and `EnvironmentQualityController` for visual quality switches. Do not reload scenes just to change visual quality.
 - City Builder Bits are license/catalog source only until a later task explicitly curates runtime assets from that package.
 
+## Character visuals
+
+- `CharacterDefinition` owns character identity, model scene, normalization transform, animation set, default loadout, and enabled state. Per-character visual scale, offset, and forward rotation belong in the definition, not in showcase scenes.
+- `CharacterVisual` is the public facade for imported character models. Gameplay and debug scenes must use its API (`apply_definition`, `get_skeleton`, `get_animation_controller`, `get_available_actions`, `get_diagnostics`, `clear_character`) instead of searching inside imported GLB nodes.
+- `CharacterAnimationController` uses canonical action IDs: `idle`, `walk`, `run`, `fall`, `hit`, `attack`, and `victory`. It maps those IDs through `CharacterAnimationSet`; do not hard-code KayKit clip names in gameplay.
+- `CharacterAttachmentController` applies visual-only loadouts to `BoneAttachment3D` sockets. Accessories must not include gameplay collision, hitboxes, damage logic, or physics simulation.
+- Attachment sockets are canonical (`right_hand`, `left_hand`, `back`, `head`) and must be resolved from audited skeleton bones. If KayKit skeletons change, rerun the audit before changing socket names.
+- Run `scenes/characters/CharacterValidationTest.tscn` after editing character definitions, animation sets, accessory prefabs, loadouts, or curated Adventurers assets. Treat validation errors as blockers; warnings require explicit review in the reports.
+
 ## Collision layers
 
 | Layer | Name |

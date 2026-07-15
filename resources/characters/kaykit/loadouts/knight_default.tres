@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="CharacterLoadout" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/character_loadout.gd" id="1_loadout"]
+[ext_resource type="Script" path="res://scripts/characters/character_loadout_item.gd" id="2_item"]
+[ext_resource type="PackedScene" path="res://scenes/characters/accessories/SwordOneHanded.tscn" id="3_sword"]
+[ext_resource type="PackedScene" path="res://scenes/characters/accessories/ShieldRound.tscn" id="4_shield"]
+
+[sub_resource type="Resource" id="Item_sword"]
+script = ExtResource("2_item")
+visual_id = &"sword_1h"
+accessory_prefab = ExtResource("3_sword")
+socket = "right_hand"
+local_rotation_degrees = Vector3(0, 0, 0)
+
+[sub_resource type="Resource" id="Item_shield"]
+script = ExtResource("2_item")
+visual_id = &"shield"
+accessory_prefab = ExtResource("4_shield")
+socket = "left_hand"
+local_rotation_degrees = Vector3(0, 0, 0)
+
+[resource]
+script = ExtResource("1_loadout")
+id = &"knight_default"
+display_name = "Sword + Shield"
+items = Array[CharacterLoadoutItem]([SubResource("Item_sword"), SubResource("Item_shield")])
+

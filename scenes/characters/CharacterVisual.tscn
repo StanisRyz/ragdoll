@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/character_visual.gd" id="1_visual"]
+[ext_resource type="Script" path="res://scripts/characters/character_animation_controller.gd" id="2_animation"]
+[ext_resource type="Script" path="res://scripts/characters/character_attachment_controller.gd" id="3_attachment"]
+
+[node name="CharacterVisual" type="Node3D"]
+script = ExtResource("1_visual")
+
+[node name="ModelRoot" type="Node3D" parent="."]
+
+[node name="AttachmentRoot" type="Node3D" parent="."]
+
+[node name="DebugVisualization" type="Node3D" parent="."]
+visible = false
+
+[node name="CharacterAnimationController" type="Node" parent="."]
+script = ExtResource("2_animation")
+
+[node name="CharacterAttachmentController" type="Node" parent="."]
+script = ExtResource("3_attachment")
+

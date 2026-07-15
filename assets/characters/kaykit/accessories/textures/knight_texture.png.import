@@ -2,20 +2,17 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bb280er7o2djp"
-path.s3tc="res://.godot/imported/Knight_knight_texture.png-b65cf33d34ca927080a7a4b16c095992.s3tc.ctex"
+uid="uid://px5efh315jke"
+path.s3tc="res://.godot/imported/knight_texture.png-6567f14506318b4fc34906e1c348dda7.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
-generator_parameters={
-"md5": "930b547ec91f4d0c726b16b849b216ca"
-}
 
 [deps]
 
-source_file="res://assets/characters/kaykit/adventurers/Knight_knight_texture.png"
-dest_files=["res://.godot/imported/Knight_knight_texture.png-b65cf33d34ca927080a7a4b16c095992.s3tc.ctex"]
+source_file="res://assets/characters/kaykit/accessories/textures/knight_texture.png"
+dest_files=["res://.godot/imported/knight_texture.png-6567f14506318b4fc34906e1c348dda7.s3tc.ctex"]
 
 [params]
 

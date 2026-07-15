@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="CharacterLoadout" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/character_loadout.gd" id="1_loadout"]
+[ext_resource type="Script" path="res://scripts/characters/character_loadout_item.gd" id="2_item"]
+[ext_resource type="PackedScene" path="res://scenes/characters/accessories/Bow.tscn" id="3_bow"]
+[ext_resource type="PackedScene" path="res://scenes/characters/accessories/Quiver.tscn" id="4_quiver"]
+
+[sub_resource type="Resource" id="Item_bow"]
+script = ExtResource("2_item")
+visual_id = &"bow"
+accessory_prefab = ExtResource("3_bow")
+socket = "left_hand"
+
+[sub_resource type="Resource" id="Item_quiver"]
+script = ExtResource("2_item")
+visual_id = &"quiver"
+accessory_prefab = ExtResource("4_quiver")
+socket = "back"
+
+[resource]
+script = ExtResource("1_loadout")
+id = &"ranger_default"
+display_name = "Bow + Quiver"
+items = Array[CharacterLoadoutItem]([SubResource("Item_bow"), SubResource("Item_quiver")])
+
