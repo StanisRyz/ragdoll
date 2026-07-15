@@ -11,10 +11,13 @@ config = ExtResource("2_config")
 
 [node name="LookTarget" type="Node3D" parent="."]
 
-[node name="SpringArm3D" type="SpringArm3D" parent="FollowRoot"]
+[node name="YawPivot" type="Node3D" parent="FollowRoot"]
+
+[node name="PitchPivot" type="Node3D" parent="FollowRoot/YawPivot"]
+
+[node name="SpringArm3D" type="SpringArm3D" parent="FollowRoot/YawPivot/PitchPivot"]
 spring_length = 7.0
 
-[node name="Camera3D" type="Camera3D" parent="FollowRoot/SpringArm3D"]
+[node name="Camera3D" type="Camera3D" parent="FollowRoot/YawPivot/PitchPivot/SpringArm3D"]
 current = true
 fov = 52.0
-

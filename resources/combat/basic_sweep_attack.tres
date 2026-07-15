@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/attack_definition.gd" id="1_attack"]
+
+[resource]
+script = ExtResource("1_attack")
+id = &"basic_sweep"
+display_name = "Basic Sweep"
+windup_duration = 0.12
+active_duration = 0.16
+recovery_duration = 0.22
+cooldown = 0.18
+movement_multiplier = 0.35
+rotation_allowed = false
+maximum_targets = 3
+hitbox_offset = Vector3(0, 0.95, -0.78)
+hitbox_size = Vector3(1.85, 1.25, 1.05)
+base_impulse = 6.0
+vertical_impulse = 2.0
+animation_action = &"attack"
+tags = PackedStringArray("melee", "sweep", "fallback_animation")

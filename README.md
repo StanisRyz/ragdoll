@@ -1,10 +1,10 @@
 # Ragdoll Arena
 
-Godot 4.5 Compatibility-renderer foundation for a future browser ragdoll arena. The current stage is a playable modular graybox test arena; it intentionally has no fighters, AI, ragdolls, attacks, active traps, match flow, final assets, or Yandex SDK.
+Godot 4.5 Compatibility-renderer foundation for a future browser ragdoll arena. The current stage is a playable combat-interaction sandbox: modular arena, KayKit visual Fighters, camera-relative locomotion, action-layer attack and dash, Hitbox/Hurtbox contact events, and automated movement/combat validation. It intentionally still has no health, knockback, hit reaction, stun, instability, ragdoll, AI, match flow, active traps, final assets, or Yandex SDK.
 
 ## Open, run, and verify
 
-Open `project.godot` in Godot 4.5+. The main scene remains `Bootstrap.tscn`, which safely opens `ArenaGrayboxTest.tscn`.
+Open `project.godot` in Godot 4.5+. The main scene remains `Bootstrap.tscn`, which safely opens `CombatInteractionTest.tscn` through `AppConfig.START_SCENE_PATH`.
 
 ```powershell
 godot --path .
@@ -103,10 +103,61 @@ Locomotion states are `IDLE`, `WALKING`, `RUNNING`, `AIRBORNE`, and `DISABLED`. 
 
 `FighterMovementValidationTest.tscn` validates all six CharacterDefinitions without keyboard input: definition application, acceleration, speed cap, stopping without sliding, direction change and rotation, disabled movement, DeathZone transition to `DISABLED`, reset to `IDLE`, and runtime animation loop/one-shot policy. Latest result: `0 errors`, `0 warnings`.
 
+## Fighter combat foundation
+
+`Fighter.tscn` now separates locomotion from action state. `FighterStateController` still owns locomotion (`IDLE`, `WALKING`, `RUNNING`, `AIRBORNE`, `DISABLED`), while `FighterActionController` owns action occupancy (`NONE`, `PRIMARY_ATTACK`, `DASH`). `FighterMotor` keeps separate locomotion, action, future external impulse, and vertical velocity channels. Dash uses action velocity; knockback is intentionally left for the next stage.
+
+Floor handling applies `CharacterBody3D.floor_snap_length` and `floor_max_angle` from `FighterMovementConfig`; `is_on_floor()` is the gameplay grounded source. `GroundProbe` remains only for debug and near-landing diagnostics. `Jump_Idle` loops at runtime for `airborne`; `land` remains one-shot.
+
+`ArenaCameraRig` uses `FollowRoot/YawPivot/PitchPivot/SpringArm3D/Camera3D`. Distance is controlled through `SpringArm3D`, yaw and pitch are independent, and camera-relative forward/right still drive player movement.
+
+### Attack, dash, and contact events
+
+`AttackDefinition` describes the basic sweep: windup, active, recovery, cooldown, movement multiplier, rotation lock, max targets, hitbox offset/size, impulse metadata, animation action, and tags. `basic_sweep_attack.tres` is a short wide hit in front of the Fighter that can hit several close enemy targets.
+
+`FighterAttackController` owns `READY`, `WINDUP`, `ACTIVE`, `RECOVERY`, and `COOLDOWN`. The Hitbox is enabled only during `ACTIVE`. Attack timing comes from `AttackDefinition`, not from animation length. KayKit does not currently provide a dedicated melee/dash library, so canonical `attack` uses `Rig_Medium_General/Use_Item` as a documented temporary fallback.
+
+`DashDefinition` describes fixed duration, speed, cooldown, steering, gravity multiplier, movement lock, rotation permission, and optional animation action. `default_dash.tres` starts from current movement intent, falls back to facing direction, collides with World geometry through `CharacterBody3D.move_and_slide`, does not deal damage, and does not grant invulnerability.
+
+`FighterHitbox` is an `Area3D` on layer 3 `Hitboxes`, masking only layer 4 `Hurtboxes`. It is disabled by default, clears hit targets per activation, rejects self-hits, applies team filtering, prevents repeat hits on the same target during one activation ID, and emits structured contact data.
+
+`FighterHurtbox` is an `Area3D` on layer 4 `Hurtboxes`, masking only `Hitboxes`. It confirms whether its owner can receive the hit and forwards the confirmed event to the owner. It does not apply health, knockback, stun, instability, or ragdoll.
+
+`CombatHitData` carries `source_fighter`, `target_fighter`, `attack_id`, `activation_id`, `hitbox_id`, `hurtbox_id`, `contact_position`, `attack_direction`, `base_impulse`, `vertical_impulse`, `source_velocity`, and `tags`. Signal relays use `duplicate_safe()`.
+
+Team rules are owned by `FighterCombatIdentity`: same-team hits are rejected unless friendly fire is enabled, self-hits are always rejected, and `can_receive_hits` gates Hurtbox confirmation.
+
+### CombatInteractionTest controls
+
+`CombatInteractionTest.tscn` contains `ArenaMedievalForest`, `PlayerFighter`, `ArenaCameraRig`, three `CombatDummy` targets, `ArenaValidator`, `CombatDebugUI`, and `DebugOverlay`.
+
+| Control | Action |
+| --- | --- |
+| WASD | Move camera-relative |
+| Left mouse | Primary attack |
+| Right mouse | Dash |
+| R | Reset player and dummies |
+| C | Cycle CharacterDefinition |
+| F | Toggle Fighter/Hitbox/Hurtbox debug |
+| M | Toggle arena markers |
+| F11 | Toggle DebugOverlay |
+
+`CombatDummy.tscn` is a Fighter without input or AI. It has a Hurtbox, team ID, hit counter, last `CombatHitData`, reset support, and debug label. The third dummy is same-team by default to verify friendly-fire filtering.
+
+## Current validation results
+
+- Headless import: `godot --headless --path . --editor --quit` completed with exit code 0.
+- `CharacterValidationTest`: `0 errors`, `5 warnings`, `1 note`; warnings are the known non-critical full bone-list differences.
+- `FighterMovementValidationTest`: completed with exit code 0; covers floor snap/angle, grounded source, locomotion, reset, airborne loop, and action velocity reset.
+- `CombatInteractionValidationTest`: completed with exit code 0; covers active-only Hitbox, self/friendly filtering, enemy hit event, one-hit-per-activation, cooldown/recovery, reset/DeathZone cancellation, attack/dash mutual blocking, dash completion, dash distance, wall collision, and six CharacterDefinitions.
+- Limited headless `CombatInteractionTest` launch completed with exit code 0.
+
+Manual visual checks still needed: play `CombatInteractionTest.tscn` in a window and inspect camera feel over height changes, debug bounds/socket markers while animations play, visible Hitbox/Hurtbox timing, and multi-target attack readability.
+
+Next stage: consume confirmed `CombatHitData` in a dedicated reaction layer for knockback, hit reaction, stun, instability, and later ragdoll activation.
+
 ## Web export and next stage
 
 The repository keeps a baseline Web preset without a custom shell or Yandex SDK. Export templates must be installed locally to produce the build. The Web preset excludes `assets/kaykit/source/**`, FBX, OBJ, MTL, PDFs, source URLs, samples, and contents preview images.
 
 `EnvironmentBenchmark.tscn` now reports current, average, and minimum FPS; node count; total and visible `MeshInstance3D` count; active quality profile; and visuals on/off. It automatically cycles STANDARD visuals on, LOW visuals on, STANDARD visuals off, and LOW visuals off.
-
-Next: add combat interaction: hitbox, hurtbox, a basic attack, and dash while keeping locomotion independent.

@@ -43,7 +43,7 @@
 
 - `CharacterDefinition` owns character identity, model scene, normalization transform, animation set, default loadout, and enabled state. Per-character visual scale, offset, and forward rotation belong in the definition, not in showcase scenes.
 - `CharacterVisual` is the public facade for imported character models. Gameplay and debug scenes must use its API (`apply_definition`, `get_skeleton`, `get_animation_controller`, `get_available_actions`, `get_diagnostics`, `clear_character`) instead of searching inside imported GLB nodes.
-- `CharacterAnimationController` uses canonical action IDs: `idle`, `walk`, `run`, `fall`, `hit`, `attack`, and `victory`. It maps those IDs through `CharacterAnimationSet`; do not hard-code KayKit clip names in gameplay.
+- `CharacterAnimationController` uses canonical action IDs: `idle`, `walk`, `run`, `airborne`, `land`, `hit`, `attack`, `dash`, `eliminated`, and `victory`. It maps those IDs through `CharacterAnimationSet`; do not hard-code KayKit clip names in gameplay.
 - `CharacterAttachmentController` applies visual-only loadouts to `BoneAttachment3D` sockets. Accessories must not include gameplay collision, hitboxes, damage logic, or physics simulation.
 - Attachment sockets are canonical (`right_hand`, `left_hand`, `back`, `head`) and must be resolved from audited skeleton bones. If KayKit skeletons change, rerun the audit before changing socket names.
 - Run `scenes/characters/CharacterValidationTest.tscn` after editing character definitions, animation sets, accessory prefabs, loadouts, or curated Adventurers assets. Treat validation errors as blockers; warnings require explicit review in the reports.
@@ -51,14 +51,28 @@
 ## Fighter locomotion
 
 - `Fighter` is the gameplay-facing `CharacterBody3D` wrapper around `CharacterVisual`. Combat, AI, and player systems must use the `Fighter` API instead of mutating velocity, animation players, or imported model nodes directly.
+- Public gameplay/debug access goes through `Fighter` methods such as `get_move_intent`, `get_horizontal_velocity`, `get_facing_direction`, `get_camera_target`, `get_motor`, and `cancel_current_actions`.
 - `Fighter` never reads `Input` directly. Player control belongs to `PlayerFighterInput`; future AI or mobile adapters should drive the same `set_move_intent` and `clear_move_intent` API.
 - Movement intent is world-space and camera-relative for player input. `ArenaCameraRig` provides flat forward/right vectors; input adapters must remove vertical camera components before sending intent.
-- `FighterMotor` owns horizontal velocity, vertical velocity, acceleration, deceleration, gravity, fall-speed limits, facing direction, and `move_and_slide`. Keep movement frame-rate independent and do not add combat impulses here until the combat layer exists.
+- `FighterMotor` owns separate locomotion, action, external-impulse, and vertical movement channels. Dash uses action velocity; future knockback/instability should enter through the external channel rather than overwriting locomotion.
+- `CharacterBody3D.is_on_floor()` is the gameplay grounded source. `GroundProbe` is debug/landing-prediction support only.
 - `FighterStateController` owns only simple locomotion states: `IDLE`, `WALKING`, `RUNNING`, `AIRBORNE`, `DISABLED`. Do not replace it with a complex state machine for combat work.
-- `FighterAnimationBridge` maps locomotion state to canonical animation IDs and must not restart the same action every physics frame. Runtime locomotion animation copies are treated as in-place; world movement is owned by `CharacterBody3D`.
+- `FighterAnimationBridge` maps locomotion state to canonical animation IDs and must not restart the same action every physics frame or interrupt active action animations. Runtime locomotion animation copies are treated as in-place; world movement is owned by `CharacterBody3D`.
 - DeathZones connect to `Fighter.notify_death_zone(zone_id)`. Falling disables movement and emits `fighter_fell`; it must not delete the Fighter or end a match.
-- `reset_to_transform` must clear velocity and intent, restore upright orientation, re-enable movement, return to `IDLE`, and preserve the current character/loadout.
-- Run `scenes/fighters/FighterMovementValidationTest.tscn` after movement, camera, Fighter animation, or reset changes. Locomotion is separate from future hitbox, hurtbox, attack, dash, and combat-state logic.
+- `reset_to_transform` must clear velocity, intent, action velocity, and active actions; restore upright orientation; re-enable movement; return to `IDLE`; and preserve the current character/loadout.
+- Run `scenes/fighters/FighterMovementValidationTest.tscn` after movement, camera, Fighter animation, or reset changes.
+
+## Fighter combat foundation
+
+- Locomotion state and action state are separate. `FighterStateController` remains locomotion-only; `FighterActionController` owns `NONE`, `PRIMARY_ATTACK`, and `DASH` action occupancy.
+- `FighterAttackController` owns attack phases (`READY`, `WINDUP`, `ACTIVE`, `RECOVERY`, `COOLDOWN`), activation IDs, attack timing from `AttackDefinition`, movement multiplier, rotation lock, and active-window Hitbox enablement.
+- `FighterDashController` owns fixed-duration dash through action velocity from `DashDefinition`. It must not implement dash by temporarily rewriting `maximum_speed`.
+- `FighterHitbox` detects `FighterHurtbox`, filters owner/self and teams, limits targets per activation, and creates `CombatHitData`. It must never change target health, velocity, ragdoll, stun, instability, or internal target nodes directly.
+- `FighterHurtbox` confirms received `CombatHitData`, checks `can_receive_hits` and team rules through `FighterCombatIdentity`, and emits the confirmed event to its owning Fighter.
+- `CombatHitData` is the signal payload for combat contact. Treat it as immutable after emission; use `duplicate_safe()` when relaying through signals.
+- Team filtering: same-team hits are rejected unless either side has `friendly_fire_enabled`; self-hits are always rejected. One activation ID may hit a target at most once.
+- Current scope stops at contact events. Knockback, hit reaction, stun, instability, health, and ragdoll begin in the next stage and should consume confirmed `CombatHitData` rather than modifying Hitbox/Hurtbox responsibilities.
+- Run both `scenes/fighters/FighterMovementValidationTest.tscn` and `scenes/combat/CombatInteractionValidationTest.tscn` after combat, movement-channel, Fighter scene, Hitbox, Hurtbox, attack, dash, or action-animation changes.
 
 ## Collision layers
 

@@ -32,7 +32,7 @@ func get_state() -> StringName:
 	return _state
 
 func _resolve_state() -> StringName:
-	if not fighter.is_movement_enabled():
+	if not fighter.is_player_input_enabled() and not fighter.are_combat_actions_enabled():
 		return &"DISABLED"
 	if not fighter.is_grounded():
 		return &"AIRBORNE"

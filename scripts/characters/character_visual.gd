@@ -237,7 +237,8 @@ func _compute_bounds() -> AABB:
 	for mesh: MeshInstance3D in _collect_mesh_instances(_model_instance):
 		if mesh.mesh == null:
 			continue
-		var transformed: AABB = mesh.global_transform * mesh.mesh.get_aabb()
+		var local_transform: Transform3D = global_transform.affine_inverse() * mesh.global_transform
+		var transformed: AABB = local_transform * mesh.mesh.get_aabb()
 		if initialized:
 			bounds = bounds.merge(transformed)
 		else:
@@ -280,8 +281,8 @@ func _rebuild_debug_visualization() -> void:
 		marker_mesh.height = 0.16
 		marker.mesh = marker_mesh
 		var socket: Node3D = _sockets[socket_id]
-		debug_visualization.add_child(marker)
-		marker.global_position = socket.global_position
+		socket.add_child(marker)
+		marker.position = Vector3.ZERO
 
 func _collect_mesh_instances(root: Node) -> Array[MeshInstance3D]:
 	var meshes: Array[MeshInstance3D] = []

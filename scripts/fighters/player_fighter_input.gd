@@ -14,7 +14,7 @@ func _ready() -> void:
 func _physics_process(_delta: float) -> void:
 	if fighter == null:
 		return
-	if not input_enabled or not fighter.is_movement_enabled():
+	if not input_enabled or not fighter.is_player_input_enabled() or not fighter.is_locomotion_input_enabled():
 		fighter.clear_move_intent()
 		return
 	var input_vector := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
@@ -31,4 +31,3 @@ func _physics_process(_delta: float) -> void:
 
 func set_camera_rig(rig: ArenaCameraRig) -> void:
 	camera_rig = rig
-

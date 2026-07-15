@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/fighters/fighter.gd" id="1_fighter"]
 [ext_resource type="Resource" path="res://resources/fighters/default_fighter_movement_config.tres" id="2_config"]
@@ -7,6 +7,15 @@
 [ext_resource type="Script" path="res://scripts/fighters/fighter_state_controller.gd" id="5_state"]
 [ext_resource type="Script" path="res://scripts/fighters/fighter_animation_bridge.gd" id="6_animation"]
 [ext_resource type="Script" path="res://scripts/fighters/fighter_fall_detector.gd" id="7_fall"]
+[ext_resource type="PackedScene" path="res://scenes/combat/FighterHurtbox.tscn" id="8_hurtbox"]
+[ext_resource type="PackedScene" path="res://scenes/combat/FighterHitbox.tscn" id="9_hitbox"]
+[ext_resource type="Script" path="res://scripts/combat/fighter_combat_identity.gd" id="10_identity"]
+[ext_resource type="Script" path="res://scripts/combat/fighter_action_controller.gd" id="11_action"]
+[ext_resource type="Script" path="res://scripts/combat/fighter_attack_controller.gd" id="12_attack"]
+[ext_resource type="Script" path="res://scripts/combat/fighter_dash_controller.gd" id="13_dash"]
+[ext_resource type="Script" path="res://scripts/combat/fighter_action_animation_bridge.gd" id="14_action_animation"]
+[ext_resource type="Resource" path="res://resources/combat/basic_sweep_attack.tres" id="15_attack_definition"]
+[ext_resource type="Resource" path="res://resources/combat/default_dash.tres" id="16_dash_definition"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape"]
 radius = 0.42
@@ -25,6 +34,8 @@ radius = 0.1
 height = 0.2
 
 [node name="Fighter" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 97
 script = ExtResource("1_fighter")
 movement_config = ExtResource("2_config")
 
@@ -33,6 +44,15 @@ position = Vector3(0, 0.95, 0)
 shape = SubResource("CapsuleShape")
 
 [node name="CharacterVisual" parent="." instance=ExtResource("3_visual")]
+
+[node name="Hurtbox" parent="." instance=ExtResource("8_hurtbox")]
+owner_fighter_path = NodePath("..")
+
+[node name="HitboxRoot" type="Node3D" parent="."]
+
+[node name="PrimaryAttackHitbox" parent="HitboxRoot" instance=ExtResource("9_hitbox")]
+owner_fighter_path = NodePath("../..")
+debug_visualization_enabled = false
 
 [node name="GroundProbe" type="RayCast3D" parent="."]
 target_position = Vector3(0, -1.2, 0)
@@ -72,3 +92,20 @@ script = ExtResource("6_animation")
 
 [node name="FighterFallDetector" type="Node" parent="Components"]
 script = ExtResource("7_fall")
+
+[node name="FighterCombatIdentity" type="Node" parent="Components"]
+script = ExtResource("10_identity")
+
+[node name="FighterActionController" type="Node" parent="Components"]
+script = ExtResource("11_action")
+
+[node name="FighterAttackController" type="Node" parent="Components"]
+script = ExtResource("12_attack")
+attack_definition = ExtResource("15_attack_definition")
+
+[node name="FighterDashController" type="Node" parent="Components"]
+script = ExtResource("13_dash")
+dash_definition = ExtResource("16_dash_definition")
+
+[node name="FighterActionAnimationBridge" type="Node" parent="Components"]
+script = ExtResource("14_action_animation")

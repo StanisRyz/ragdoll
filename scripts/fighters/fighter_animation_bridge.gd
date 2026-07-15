@@ -32,6 +32,8 @@ func _on_state_changed(previous_state: StringName, next_state: StringName) -> vo
 	_play_for_state(next_state)
 
 func _play_for_state(state: StringName) -> void:
+	if fighter.has_active_action():
+		return
 	var action: StringName = _action_for_state(state)
 	if action.is_empty() or action == _last_locomotion_action:
 		return

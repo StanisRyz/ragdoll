@@ -5,9 +5,11 @@ extends Node3D
 @export var follow_target_path: NodePath
 
 @onready var follow_root: Node3D = $FollowRoot
+@onready var yaw_pivot: Node3D = $FollowRoot/YawPivot
+@onready var pitch_pivot: Node3D = $FollowRoot/YawPivot/PitchPivot
 @onready var look_target: Node3D = $LookTarget
-@onready var spring_arm: SpringArm3D = $FollowRoot/SpringArm3D
-@onready var camera: Camera3D = $FollowRoot/SpringArm3D/Camera3D
+@onready var spring_arm: SpringArm3D = $FollowRoot/YawPivot/PitchPivot/SpringArm3D
+@onready var camera: Camera3D = $FollowRoot/YawPivot/PitchPivot/SpringArm3D/Camera3D
 
 var follow_target: Fighter
 
@@ -28,12 +30,14 @@ func _process(delta: float) -> void:
 	var biased_target: Vector3 = target_position + look_ahead
 	biased_target = biased_target.lerp(Vector3.ZERO, config.arena_center_bias)
 	look_target.global_position = look_target.global_position.lerp(biased_target, clampf(config.look_smoothing * delta, 0.0, 1.0))
-	var yaw_basis := Basis(Vector3.UP, deg_to_rad(config.yaw_degrees))
-	var flat_back: Vector3 = yaw_basis * Vector3.BACK
-	var desired_position: Vector3 = target_position + flat_back.normalized() * config.follow_distance + Vector3.UP * config.follow_height
+	var desired_position: Vector3 = target_position + Vector3.UP * config.follow_height
 	follow_root.global_position = follow_root.global_position.lerp(desired_position, clampf(config.position_smoothing * delta, 0.0, 1.0))
-	follow_root.look_at(look_target.global_position, Vector3.UP)
-	follow_root.rotation_degrees.x = config.pitch_degrees
+	var to_target: Vector3 = look_target.global_position - follow_root.global_position
+	to_target.y = 0.0
+	if to_target.length() > 0.001:
+		yaw_pivot.rotation.y = atan2(-to_target.x, -to_target.z) + deg_to_rad(config.yaw_degrees)
+	pitch_pivot.rotation_degrees.x = config.pitch_degrees
+	spring_arm.spring_length = config.spring_arm_length
 
 func set_follow_target(target: Fighter) -> void:
 	follow_target = target
@@ -50,4 +54,3 @@ func get_flat_right() -> Vector3:
 	var right := camera.global_transform.basis.x
 	right.y = 0.0
 	return right.normalized() if right.length() > 0.001 else Vector3.RIGHT
-

@@ -3,7 +3,7 @@ extends Node
 
 const TARGET_FPS: int = 60
 const DESIGN_VIEWPORT_SIZE: Vector2i = Vector2i(1280, 720)
-const START_SCENE_PATH: String = "res://scenes/fighters/FighterMovementTest.tscn"
+const START_SCENE_PATH: String = "res://scenes/combat/CombatInteractionTest.tscn"
 
 var debug_mode: bool = OS.is_debug_build()
 var debug_overlay_visible: bool = true
