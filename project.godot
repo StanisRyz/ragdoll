@@ -120,6 +120,22 @@ debug_toggle_arena_markers={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"physical_keycode":77)]
 }
+debug_toggle_quality_profile={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":81)]
+}
+debug_toggle_graybox_visuals={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":71)]
+}
+debug_toggle_environment_visuals={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":86)]
+}
+debug_toggle_background={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":66)]
+}
 
 [layer_names]
 

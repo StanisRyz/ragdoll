@@ -1,0 +1,175 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://scripts/environment/arena_visual_layers.gd" id="1_layers"]
+[ext_resource type="PackedScene" path="res://scenes/arena/ArenaGraybox.tscn" id="2_arena"]
+[ext_resource type="Script" path="res://scripts/environment/environment_quality_controller.gd" id="3_quality_controller"]
+[ext_resource type="Resource" path="res://resources/configuration/environment_quality_low.tres" id="4_low"]
+[ext_resource type="Resource" path="res://resources/configuration/environment_quality_standard.tres" id="5_standard"]
+[ext_resource type="PackedScene" path="res://scenes/environment/kaykit/prefabs/floors/KayKitDirtGrassBlock.tscn" id="6_dirt"]
+[ext_resource type="PackedScene" path="res://scenes/environment/kaykit/prefabs/floors/KayKitStoneDarkBlock.tscn" id="7_stone"]
+[ext_resource type="PackedScene" path="res://scenes/environment/kaykit/prefabs/structures/KayKitWallStraight.tscn" id="8_wall"]
+[ext_resource type="PackedScene" path="res://scenes/environment/kaykit/prefabs/structures/KayKitWallGate.tscn" id="9_gate"]
+[ext_resource type="PackedScene" path="res://scenes/environment/kaykit/prefabs/background/KayKitGreenTowerBackground.tscn" id="10_tower"]
+[ext_resource type="PackedScene" path="res://scenes/environment/kaykit/prefabs/nature/KayKitForestTree.tscn" id="11_tree"]
+[ext_resource type="PackedScene" path="res://scenes/environment/kaykit/prefabs/nature/KayKitForestBush.tscn" id="12_bush"]
+[ext_resource type="PackedScene" path="res://scenes/environment/kaykit/prefabs/props/KayKitForestRock.tscn" id="13_rock"]
+
+[sub_resource type="Sky" id="Sky_medieval_forest"]
+
+[sub_resource type="Environment" id="Environment_medieval_forest"]
+background_mode = 2
+sky = SubResource("Sky_medieval_forest")
+ambient_light_source = 3
+ambient_light_color = Color(0.58, 0.64, 0.72, 1)
+ambient_light_energy = 0.85
+tonemap_mode = 2
+glow_enabled = true
+glow_intensity = 0.18
+
+[node name="ArenaMedievalForest" type="Node3D"]
+script = ExtResource("1_layers")
+arena_path = NodePath("Physics/ArenaGraybox")
+graybox_visual_root_path = NodePath("Physics/ArenaGraybox/StaticCollision")
+environment_visuals_path = NodePath("EnvironmentVisuals")
+background_path = NodePath("BackgroundDecoration")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_medieval_forest")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-48, -34, 0)
+light_energy = 1.35
+shadow_enabled = true
+
+[node name="Physics" type="Node3D" parent="."]
+
+[node name="ArenaGraybox" parent="Physics" instance=ExtResource("2_arena")]
+
+[node name="GrayboxVisuals" type="Node3D" parent="."]
+
+[node name="EnvironmentVisuals" type="Node3D" parent="."]
+
+[node name="FloorSkins" type="Node3D" parent="EnvironmentVisuals"]
+
+[node name="FloorNW" parent="EnvironmentVisuals/FloorSkins" instance=ExtResource("6_dirt")]
+position = Vector3(-6, 0.04, -6)
+scale = Vector3(5.9, 0.22, 5.9)
+
+[node name="FloorN" parent="EnvironmentVisuals/FloorSkins" instance=ExtResource("6_dirt")]
+position = Vector3(0, 0.04, -6)
+scale = Vector3(5.9, 0.22, 5.9)
+
+[node name="FloorNE" parent="EnvironmentVisuals/FloorSkins" instance=ExtResource("6_dirt")]
+position = Vector3(6, 0.04, -6)
+scale = Vector3(5.9, 0.22, 5.9)
+
+[node name="FloorW" parent="EnvironmentVisuals/FloorSkins" instance=ExtResource("6_dirt")]
+position = Vector3(-6, 0.04, 0)
+scale = Vector3(5.9, 0.22, 5.9)
+
+[node name="FloorCenterStone" parent="EnvironmentVisuals/FloorSkins" instance=ExtResource("7_stone")]
+position = Vector3(0, 0.05, 0)
+scale = Vector3(5.8, 0.22, 5.8)
+
+[node name="FloorE" parent="EnvironmentVisuals/FloorSkins" instance=ExtResource("6_dirt")]
+position = Vector3(6, 0.04, 0)
+scale = Vector3(5.9, 0.22, 5.9)
+
+[node name="FloorSW" parent="EnvironmentVisuals/FloorSkins" instance=ExtResource("6_dirt")]
+position = Vector3(-6, 0.04, 6)
+scale = Vector3(5.9, 0.22, 5.9)
+
+[node name="FloorS" parent="EnvironmentVisuals/FloorSkins" instance=ExtResource("6_dirt")]
+position = Vector3(0, 0.04, 6)
+scale = Vector3(5.9, 0.22, 5.9)
+
+[node name="FloorSE" parent="EnvironmentVisuals/FloorSkins" instance=ExtResource("6_dirt")]
+position = Vector3(6, 0.04, 6)
+scale = Vector3(5.9, 0.22, 5.9)
+
+[node name="Structures" type="Node3D" parent="EnvironmentVisuals"]
+
+[node name="NorthGate" parent="EnvironmentVisuals/Structures" instance=ExtResource("9_gate")]
+position = Vector3(0, 0.2, -11.3)
+scale = Vector3(1.8, 1.8, 1.8)
+
+[node name="SouthGate" parent="EnvironmentVisuals/Structures" instance=ExtResource("9_gate")]
+position = Vector3(0, 0.2, 11.3)
+rotation_degrees = Vector3(0, 180, 0)
+scale = Vector3(1.8, 1.8, 1.8)
+
+[node name="WestWall" parent="EnvironmentVisuals/Structures" instance=ExtResource("8_wall")]
+position = Vector3(-11.3, 0.2, 0)
+rotation_degrees = Vector3(0, 90, 0)
+scale = Vector3(1.8, 1.8, 1.8)
+
+[node name="EastWall" parent="EnvironmentVisuals/Structures" instance=ExtResource("8_wall")]
+position = Vector3(11.3, 0.2, 0)
+rotation_degrees = Vector3(0, -90, 0)
+scale = Vector3(1.8, 1.8, 1.8)
+
+[node name="HazardSocketVisuals" type="Node3D" parent="EnvironmentVisuals"]
+
+[node name="HazardNorthRock" parent="EnvironmentVisuals/HazardSocketVisuals" instance=ExtResource("13_rock")]
+position = Vector3(0, 0.28, -4.5)
+scale = Vector3(1.4, 1.4, 1.4)
+
+[node name="HazardWestRock" parent="EnvironmentVisuals/HazardSocketVisuals" instance=ExtResource("13_rock")]
+position = Vector3(-4.5, 0.28, 0)
+rotation_degrees = Vector3(0, 75, 0)
+scale = Vector3(1.2, 1.2, 1.2)
+
+[node name="HazardEastRock" parent="EnvironmentVisuals/HazardSocketVisuals" instance=ExtResource("13_rock")]
+position = Vector3(4.5, 0.28, 0)
+rotation_degrees = Vector3(0, -55, 0)
+scale = Vector3(1.2, 1.2, 1.2)
+
+[node name="Nature" type="Node3D" parent="EnvironmentVisuals"]
+
+[node name="TreeNW" parent="EnvironmentVisuals/Nature" instance=ExtResource("11_tree")]
+position = Vector3(-13.5, 0.0, -8.5)
+rotation_degrees = Vector3(0, 20, 0)
+scale = Vector3(1.8, 1.8, 1.8)
+
+[node name="TreeNE" parent="EnvironmentVisuals/Nature" instance=ExtResource("11_tree")]
+position = Vector3(13.0, 0.0, -7.0)
+rotation_degrees = Vector3(0, -35, 0)
+scale = Vector3(1.7, 1.7, 1.7)
+
+[node name="TreeSW" parent="EnvironmentVisuals/Nature" instance=ExtResource("11_tree")]
+position = Vector3(-12.5, 0.0, 8.0)
+rotation_degrees = Vector3(0, 80, 0)
+scale = Vector3(1.6, 1.6, 1.6)
+
+[node name="TreeSE" parent="EnvironmentVisuals/Nature" instance=ExtResource("11_tree")]
+position = Vector3(13.5, 0.0, 8.0)
+rotation_degrees = Vector3(0, -105, 0)
+scale = Vector3(1.9, 1.9, 1.9)
+
+[node name="BushN" parent="EnvironmentVisuals/Nature" instance=ExtResource("12_bush")]
+position = Vector3(-7.0, 0.1, -12.2)
+scale = Vector3(1.8, 1.8, 1.8)
+
+[node name="BushS" parent="EnvironmentVisuals/Nature" instance=ExtResource("12_bush")]
+position = Vector3(6.8, 0.1, 12.2)
+rotation_degrees = Vector3(0, 130, 0)
+scale = Vector3(1.8, 1.8, 1.8)
+
+[node name="BackgroundDecoration" type="Node3D" parent="."]
+
+[node name="TowerNW" parent="BackgroundDecoration" instance=ExtResource("10_tower")]
+position = Vector3(-18, 0, -17)
+rotation_degrees = Vector3(0, 35, 0)
+scale = Vector3(1.4, 1.4, 1.4)
+
+[node name="TowerSE" parent="BackgroundDecoration" instance=ExtResource("10_tower")]
+position = Vector3(18, 0, 17)
+rotation_degrees = Vector3(0, -140, 0)
+scale = Vector3(1.4, 1.4, 1.4)
+
+[node name="QualityController" type="Node" parent="."]
+script = ExtResource("3_quality_controller")
+visual_root_path = NodePath("..")
+low_profile = ExtResource("4_low")
+standard_profile = ExtResource("5_standard")
+active_profile_id = &"standard"

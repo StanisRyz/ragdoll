@@ -13,6 +13,9 @@ func validate_arena() -> Dictionary:
 	if arena == null:
 		errors.append("ArenaValidator could not find ArenaRoot.")
 		return _finish(errors, warnings)
+	if validation_config == null:
+		errors.append("ArenaValidator requires an ArenaValidationConfig resource.")
+		return _finish(errors, warnings)
 	var structure: Dictionary = arena.validate_structure()
 	errors.append_array(structure.get("errors", PackedStringArray()))
 	var all_spawns: Array[ArenaSpawnPoint] = arena.get_bot_spawn_points()
@@ -47,10 +50,13 @@ func _validate_unique_ids(items: Array, label: String, errors: PackedStringArray
 		ids[item_id] = true
 
 func _validate_spawn_positions(spawns: Array[ArenaSpawnPoint], errors: PackedStringArray, warnings: PackedStringArray) -> void:
+	var arena_half_size: Vector2 = validation_config.expected_arena_size * 0.5
+	var safe_x: float = arena_half_size.x - validation_config.minimum_edge_margin
+	var safe_z: float = arena_half_size.y - validation_config.minimum_edge_margin
 	for first_index: int in spawns.size():
 		var first: ArenaSpawnPoint = spawns[first_index]
 		var position: Vector3 = first.global_position
-		if absf(position.x) > 12.0 - validation_config.minimum_edge_margin or absf(position.z) > 12.0 - validation_config.minimum_edge_margin:
+		if absf(position.x) > safe_x or absf(position.z) > safe_z:
 			errors.append("Spawn %s is too close to an open edge." % first.spawn_id)
 		if position.y < 0.2:
 			warnings.append("Spawn %s should sit slightly above the floor." % first.spawn_id)
@@ -78,7 +84,13 @@ func _validate_required_anchors(anchors: Array[ArenaCameraAnchor], errors: Packe
 			errors.append("Missing required camera anchor: %s" % required_id)
 
 func _validate_collision_layers(arena: ArenaRoot, errors: PackedStringArray) -> void:
-	for body: Node in arena.get_node("StaticCollision").get_children():
+	var collision_container: Node = arena.get_node_or_null("Physics")
+	if collision_container == null:
+		collision_container = arena.get_node_or_null("StaticCollision")
+	if collision_container == null:
+		errors.append("Arena needs a Physics or StaticCollision container for World collision.")
+		return
+	for body: Node in collision_container.get_children():
 		if body is CollisionObject3D and body.collision_layer != 1:
 			errors.append("Static arena collision %s must use the World layer." % body.name)
 

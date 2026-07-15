@@ -1,0 +1,49 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/arena/ArenaMedievalForest.tscn" id="1_visual_arena"]
+[ext_resource type="Script" path="res://scripts/arena/arena_free_camera.gd" id="2_camera"]
+[ext_resource type="Script" path="res://scripts/arena/arena_validator.gd" id="3_validator"]
+[ext_resource type="Resource" path="res://resources/configuration/arena_validation_config.tres" id="4_config"]
+[ext_resource type="Script" path="res://scripts/environment/arena_visual_test.gd" id="5_test"]
+[ext_resource type="PackedScene" path="res://scenes/debug/DebugOverlay.tscn" id="6_overlay"]
+
+[node name="ArenaVisualTest" type="Node3D"]
+script = ExtResource("5_test")
+
+[node name="ArenaMedievalForest" parent="." instance=ExtResource("1_visual_arena")]
+
+[node name="FreeCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.879, 0.477, 0, -0.477, 0.879, 0, 12.5, 22)
+current = true
+script = ExtResource("2_camera")
+arena_path = NodePath("../ArenaMedievalForest/Physics/ArenaGraybox")
+
+[node name="ArenaValidator" type="Node" parent="."]
+script = ExtResource("3_validator")
+arena_path = NodePath("../ArenaMedievalForest/Physics/ArenaGraybox")
+validation_config = ExtResource("4_config")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ReportLabel" type="Label" parent="CanvasLayer"]
+offset_left = 18.0
+offset_top = 18.0
+offset_right = 680.0
+offset_bottom = 170.0
+theme_override_font_sizes/font_size = 16
+
+[node name="CameraLabel" type="Label" parent="CanvasLayer"]
+offset_left = 18.0
+offset_top = 180.0
+offset_right = 760.0
+offset_bottom = 210.0
+
+[node name="StatusLabel" type="Label" parent="CanvasLayer"]
+offset_left = 18.0
+offset_top = 680.0
+offset_right = 1260.0
+offset_bottom = 712.0
+theme_override_font_sizes/font_size = 14
+
+[node name="DebugOverlay" parent="CanvasLayer" instance=ExtResource("6_overlay")]
+

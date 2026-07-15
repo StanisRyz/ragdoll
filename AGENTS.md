@@ -24,11 +24,20 @@
 ## Arena scenes
 
 - `ArenaGraybox` must retain these direct containers: `Geometry`, `StaticCollision`, `SpawnPoints`, `HazardSockets`, `CameraAnchors`, `DeathZones`, `Decoration`, and `DebugVisualization`.
+- Visual arena scenes may wrap `ArenaGraybox` instead of duplicating its physics. Keep the gameplay-facing `ArenaRoot` discoverable and do not move spawn, hazard, camera, or DeathZone ownership into decorative layers.
 - `ArenaRoot` is the only public discovery surface for arena content. Gameplay systems use its typed methods; they must not hard-code child paths or repeatedly scan the tree.
 - Spawn points, hazard sockets, camera anchors, and DeathZones need unique IDs. Spawn points face the arena, remain above the floor, stay clear of open edges, and preserve the configured minimum spacing.
 - DeathZones only signal that a `PhysicsBody3D` entered. They never delete bodies, reload a scene, or control a match.
 - Use explicit primitive `MeshInstance3D` plus manual `CollisionShape3D` pairs for physical graybox modules. Static arena modules use layer 1 `World`; DeathZones use layer 6 `DeathZones`. Do not generate mesh collision automatically.
 - Run `ArenaValidator` whenever arena composition, IDs, transforms, containers, or collision layers change. Address errors before treating an arena scene as usable; warnings need an explicit review.
+
+## KayKit assets
+
+- Keep original KayKit packages in `assets/kaykit/source/`; Godot should not import from this folder.
+- Runtime visuals must use curated GLTF/GLB copies under `assets/environment/kaykit/` or `assets/characters/kaykit/`, with shared atlas textures under `assets/environment/kaykit/textures/`.
+- Decorative KayKit prefabs live under `scenes/environment/kaykit/prefabs/` and must not add physics collision unless a later task explicitly promotes an asset to gameplay collision.
+- Use `EnvironmentQualityProfile` and `EnvironmentQualityController` for visual quality switches. Do not reload scenes just to change visual quality.
+- City Builder Bits are license/catalog source only until a later task explicitly curates runtime assets from that package.
 
 ## Collision layers
 

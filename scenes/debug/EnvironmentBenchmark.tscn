@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/arena/ArenaMedievalForest.tscn" id="1_visual_arena"]
+[ext_resource type="Script" path="res://scripts/environment/environment_benchmark.gd" id="2_benchmark"]
+
+[node name="EnvironmentBenchmark" type="Node3D"]
+script = ExtResource("2_benchmark")
+
+[node name="ArenaMedievalForest" parent="." instance=ExtResource("1_visual_arena")]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+current = true
+fov = 58.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="BenchmarkLabel" type="Label" parent="CanvasLayer"]
+offset_left = 18.0
+offset_top = 18.0
+offset_right = 780.0
+offset_bottom = 56.0
+theme_override_font_sizes/font_size = 16
+

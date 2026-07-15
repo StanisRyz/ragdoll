@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EnvironmentQualityProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/environment/environment_quality_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+profile_id = &"standard"
+show_kaykit_visuals = true
+show_background_decoration = true
+show_small_props = true
+show_foliage = true
+enable_shadows = true
+

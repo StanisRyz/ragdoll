@@ -50,8 +50,18 @@ Gameplay reads named Input Map actions, allowing a later mobile-input adapter. `
 
 `godot --headless --path . --editor --quit` and a four-second headless Bootstrap run completed successfully after this stage. The arena validator runs at startup; its authored arena configuration is expected to return **0 errors and 0 warnings**. Visual flight controls, anchor switching, and probe interaction still require a manual editor/window check because headless mode cannot provide mouse-driven inspection.
 
+## KayKit visual arena
+
+KayKit originals are archived under `assets/kaykit/source/` and ignored by Godot through `.gdignore`. Runtime visuals use only curated copies under `assets/environment/kaykit/` and `assets/characters/kaykit/`; package licenses are registered in `assets/kaykit/licenses/`.
+
+`scenes/arena/ArenaMedievalForest.tscn` is the first visual arena. It wraps the existing `ArenaGraybox` physics scene, adds independent KayKit floor, wall, nature, hazard-socket, and background visual layers, and keeps decorative assets collision-free. The gameplay contract remains the inner `ArenaRoot` at `Physics/ArenaGraybox`.
+
+`scenes/arena/ArenaVisualTest.tscn` validates the inner arena and provides visual toggles: Q switches quality profile, G toggles graybox meshes, V toggles KayKit visuals, B toggles background decoration, and M toggles debug markers. `scenes/debug/EnvironmentBenchmark.tscn` rotates a camera around the visual arena and alternates quality profiles for a quick performance smoke test.
+
+The runtime asset catalog is documented in `resources/configuration/kaykit_runtime_catalog.md`. Adventurer GLB assets are staged only for a later character pipeline; see `assets/characters/kaykit/adventurers/TECHNICAL_REPORT.md`.
+
 ## Web export and next stage
 
-The repository keeps a baseline Web preset without a custom shell or Yandex SDK. Export templates must be installed locally to produce the build.
+The repository keeps a baseline Web preset without a custom shell or Yandex SDK. Export templates must be installed locally to produce the build. The Web preset excludes `assets/kaykit/source/**`, FBX, OBJ, MTL, PDFs, source URLs, samples, and contents preview images.
 
-Next: visual environment composition, materials, lighting, and quality profiles while preserving the graybox collision and `ArenaRoot` contracts.
+Next: gameplay-facing character and hazard visuals can consume the curated KayKit pipeline without changing graybox collision or the `ArenaRoot` API.
