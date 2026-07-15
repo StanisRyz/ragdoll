@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/bootstrap.gd" id="1_bootstrap"]
+
+[node name="Bootstrap" type="Node"]
+script = ExtResource("1_bootstrap")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ErrorLabel" type="Label" parent="CanvasLayer"]
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 1248.0
+offset_bottom = 160.0
+theme_override_colors/font_color = Color(1, 0.38, 0.38, 1)
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 2
+visible = false

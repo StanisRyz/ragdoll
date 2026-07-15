@@ -10,9 +10,80 @@ config_version=5
 
 [application]
 
-config/name="New Game Project"
+config/name="Ragdoll Arena"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
+run/main_scene="res://scenes/bootstrap/Bootstrap.tscn"
+
+[autoload]
+
+AppConfig="*res://scripts/core/app_config.gd"
+SceneRouter="*res://scripts/core/scene_router.gd"
+
+[display]
+
+[display/window]
+
+size/viewport_width=1280
+size/viewport_height=720
+size/window_width_override=1280
+size/window_height_override=720
+resizable=true
+stretch/mode="canvas_items"
+
+[physics]
+
+common/physics_ticks_per_second=60
+
+[layer_names]
+
+3d_physics/layer_1="World"
+3d_physics/layer_2="Fighters"
+3d_physics/layer_3="Hitboxes"
+3d_physics/layer_4="Hurtboxes"
+3d_physics/layer_5="Hazards"
+3d_physics/layer_6="DeathZones"
+3d_physics/layer_7="Props"
+3d_physics/layer_8="Sensors"
+
+[input]
+
+move_left={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":65)]
+}
+move_right={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":68)]
+}
+move_forward={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":87)]
+}
+move_backward={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":83)]
+}
+primary_action={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"button_index":1)]
+}
+secondary_action={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"button_index":2)]
+}
+pause={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":4194305)]
+}
+debug_restart={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":4194340)]
+}
+debug_toggle_overlay={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":4194341)]
+}
 
 [rendering]
 
